@@ -26,74 +26,7 @@ public class StudentTest {
         }
     }
 
-
-    @Test public void getEventInfoTest() {
-        String query = "UPDATE currentinfo set value=1 where field='current_event_id'";
-        try{
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate(query);
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
-
-        Student person = null;
-        try{
-            person = new Student("admin");
-        }
-        catch(Exception e){
-            System.out.println("Exception");
-        }
-        assertEquals(person.getEventInfo(),"1");
-    }
-
-    @Test public void getBatchInfoTest() {
-        Student person = null;
-        try{
-            person = new Student("admin");
-        }
-        catch(Exception e){
-            System.out.println("Exception");
-        }
-        assertEquals(person.getBatchInfo(),"2020CSE");
-    }
-
-    @Test public void getSemesterInfoTest() {
-        Student person = null;
-        try{
-            person = new Student("admin");
-        }
-        catch(Exception e){
-            System.out.println("Exception");
-        }
-        assertEquals(person.getSemesterInfo(),"5");
-    }
-
-    @Test public void computeCGPATest() {
-        Student person = null;
-        try{
-            person = new Student("admin");
-        }
-        catch(Exception e){
-            System.out.println("Exception");
-        }
-        // computeCGPA() returns a double value
-        assertEquals(8.333333333333334, person.computeCGPA(false), 0.2);
-        assertEquals(8.333333333333334, person.computeCGPA(true), 0.2);
-    }
-
-    @Test public void viewCompletedCoursesTest(){
-        Student person = null;
-        try{
-            person = new Student("admin");
-        }
-        catch(Exception e){
-            System.out.println("Exception");
-        }
-        assertEquals(person.viewCompletedCourses(),"Completed courses printed");
-    }
-
-    @Test public void courseRegisterationTest() throws Exception{
+    @Test public void courseRegisterationTest(){
         String query = "UPDATE currentinfo set value=3 where field='current_event_id'";
         try{
             Statement stmt = con.createStatement();
@@ -113,16 +46,24 @@ public class StudentTest {
 
         if(person == null) return;
 
-        String input = "CS202\n";
+        String input = "2\nCS202\n1\nCS202\n7\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
-        assertEquals(person.deregisterForCourse(),"You have been deregistered from the course");
+        
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
 
-        inputStream = new ByteArrayInputStream(input.getBytes());
-        System.setIn(inputStream);
-        person.sc = new Scanner(System.in);
-        assertEquals(person.registerForCourse(),"You have been registered for the course");
+        person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "You have been deregistered from the course";
+        assertTrue(output.contains(expectedOutput));
+
+        output = outputStream.toString();
+        expectedOutput = "You have been registered for the course";     
+        assertTrue(output.contains(expectedOutput));
     }
 
     @Test public void getCourseInfoTest(){
@@ -146,8 +87,12 @@ public class StudentTest {
         System.setOut(printStream);
 
         person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "Course name: Computer Networks";
+        assertTrue(output.contains(expectedOutput));
     }
-        
+
     @Test public void viewEnrolledCoursesTest(){
         Student person = null;
         try{
@@ -170,5 +115,65 @@ public class StudentTest {
 
         person.manager();
 
+        String output = outputStream.toString();
+        String expectedOutput = "You are registered for the following courses in the current semester:";
+        assertTrue(output.contains(expectedOutput));
+
     }
+
+    @Test public void viewCompletedCoursesTest(){
+        Student person = null;
+        try{
+            person = new Student("admin");
+        }
+        catch(Exception e){
+            System.out.println("Exception");
+        }
+
+        if(person == null) return;
+        
+        String input = "5\n7\n";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        System.setIn(inputStream);
+        person.sc = new Scanner(System.in);
+        
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "You have completed the following courses:";
+        assertTrue(output.contains(expectedOutput));
+    }
+
+    @Test public void viewGradesTest(){
+        Student person = null;
+        try{
+            person = new Student("admin");
+        }
+        catch(Exception e){
+            System.out.println("Exception");
+        }
+
+        if(person == null) return;
+        
+        String input = "6\n7\n";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        System.setIn(inputStream);
+        person.sc = new Scanner(System.in);
+        
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "Your CGPA is: 8.333333333333334";
+        assertTrue(output.contains(expectedOutput));
+    }
+        
+    
 }

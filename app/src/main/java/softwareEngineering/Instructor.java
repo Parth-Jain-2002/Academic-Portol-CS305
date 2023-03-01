@@ -74,13 +74,15 @@ public class Instructor extends Person{
                         break;
                     case 7:
                         System.out.println("Thank you for using the system. Have a nice day!\n");
-                        cm.close();
                         break;
                     default:
                         System.out.println("Invalid choice");
                         break;
                 }
             }
+
+            cm.close();
+            sc.close();
         }
         catch(Exception e){
             System.out.println("Error: " + e);

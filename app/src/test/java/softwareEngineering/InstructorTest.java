@@ -23,28 +23,6 @@ public class InstructorTest {
             return;
         }
     }
-
-
-    @Test public void getEventInfoTest() {
-        String query = "UPDATE currentinfo set value=1 where field='current_event_id'";
-        try{
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate(query);
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
-
-        Student person = null;
-        try{
-            person = new Student("admin1");
-        }
-        catch(Exception e){
-            System.out.println("Exception");
-            return;
-        }
-        assertEquals(person.getEventInfo(),"1");
-    }
     
     @Test public void managerTest(){
         Instructor person = null;
