@@ -65,10 +65,12 @@ CREATE TABLE IF NOT EXISTS ProgramCore(
     FOREIGN KEY (batch_id) REFERENCES Batch(id)
 );
 
--- TABLE: ProgramElective(course_id, batch_id)
+-- TABLE: ProgramElective(course_id, batch_id, semester, year)
 CREATE TABLE IF NOT EXISTS ProgramElective(
     course_id VARCHAR(50) NOT NULL,
     batch_id VARCHAR(50) NOT NULL,
+    semester INT NOT NULL,
+    year INT NOT NULL,
     PRIMARY KEY (course_id, batch_id),
     FOREIGN KEY (course_id) REFERENCES Course(id),
     FOREIGN KEY (batch_id) REFERENCES Batch(id)
@@ -228,10 +230,10 @@ INSERT INTO ProgramCore VALUES ('CS402', '2020CSE');
 INSERT INTO ProgramCore VALUES ('CS403', '2020CSE');
 INSERT INTO ProgramCore VALUES ('CS404', '2020CSE');
 
-INSERT INTO ProgramElective VALUES ('CS501', '2020CSE');
-INSERT INTO ProgramElective VALUES ('CS502', '2020CSE');
-INSERT INTO ProgramElective VALUES ('CS503', '2020CSE');
-INSERT INTO ProgramElective VALUES ('CS504', '2020CSE');
+INSERT INTO ProgramElective VALUES ('CS501', '2020CSE', 1, 2023);
+INSERT INTO ProgramElective VALUES ('CS502', '2020CSE', 1, 2023);
+INSERT INTO ProgramElective VALUES ('CS503', '2020CSE', 1, 2023);
+INSERT INTO ProgramElective VALUES ('CS504', '2020CSE', 1, 2023);
 
 INSERT INTO Batch VALUES ('2020CSE', 5, 2020, 'CSE');
 

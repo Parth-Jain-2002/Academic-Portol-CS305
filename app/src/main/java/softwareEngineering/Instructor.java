@@ -166,6 +166,35 @@ public class Instructor extends Person{
             cgpa = "0";
         }
 
+        System.out.println("Add the course as program elective for different batches? (y/n)");
+        String choice = sc.nextLine();
+
+        if(choice.equals("y")){
+            System.out.println("Enter batch ids: ");
+            String batchIds = sc.nextLine();
+            String[] batchIdsArray = batchIds.split(" ");
+            for(int i = 0; i < batchIdsArray.length; i++){
+                // Check if batch exists in table Batch(id, semester, year, department)
+                query = "SELECT * FROM Batch WHERE id = '" + batchIdsArray[i] + "';";
+                rs = cm.executeQuery(query);
+                if(!rs.next()){
+                    System.out.println("Error: Batch " + batchIdsArray[i] + " does not exist");
+                    return;
+                }
+
+                // Check if the course is already added as program core for the batch
+                query = "SELECT * FROM ProgramCore WHERE course_id = '" + courseId + "' AND batch_id = '" + batchIdsArray[i] + "';";
+                rs = cm.executeQuery(query);
+                if(rs.next()){
+                    System.out.println("Error: Course " + courseId + " is already added as program core for batch " + batchIdsArray[i]);
+                    return;
+                }
+
+                query = "INSERT INTO ProgramElective(course_id, batch_id, semester, year) VALUES('" + courseId + "', '" + batchIdsArray[i] + "', '" + currentSem + "', '" + currentYear + "')";
+                cm.executeUpdate(query);
+            }
+        }
+
         // Step 6: If not, add the course offering
         // Insert into CourseOffering(course_id, year, semester, instructor, cgpa) table
         query = "INSERT INTO courseoffering VALUES('" + courseId + "', '" + currentYear + "', '" + currentSem + "', '" + username + "', '" + cgpa + "')";
@@ -223,8 +252,11 @@ public class Instructor extends Person{
             return;
         }
 
+        query = "DELETE FROM ProgramElective WHERE course_id = '" + courseId + "' AND semester = '" + currentSem + "' AND year = '" + currentYear + "'";
+        cm.executeUpdate(query);
+
         // Step 5: If yes, remove the course offering
-        query = "DELETE FROM courseoffering WHERE course_id = '" + courseId + "' AND semester = '" + currentSem + "' AND year = '" + currentYear + "' AND instructor = '" + username + "'";
+        query = "DELETE FROM courseoffering WHERE course_id = '" + courseId + "' AND semester = '" + currentSem + "' AND year = '" + currentYear + "'";
         cm.executeUpdate(query);
         System.out.println("Course offering removed successfully!\n");
 

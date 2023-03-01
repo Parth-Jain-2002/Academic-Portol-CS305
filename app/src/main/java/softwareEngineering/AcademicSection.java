@@ -9,51 +9,57 @@ import java.io.*;
 public class AcademicSection extends Person{
     Scanner sc;
     Connection con;
+    ConnectionManager cm;
 
     public AcademicSection(String userName){
         this.username = userName;
         this.role = "academic";
 
         sc = new Scanner();
-        ConnectionManager cm = new ConnectionManager();
+        cm = new ConnectionManager();
         con = cm.getConnection();
 
     }
 
     public void manager(){
-        int choice = 0;
-        while(choice != 8){
-            displayOptions();
-            System.out.println("Enter your choice: ");
-            choice = sc.nextInt();
-            switch(choice){
-                case 1:
-                    addCourse();
-                    break;
-                case 2:
-                    dropCourse();
-                    break;
-                case 3:
-                    viewGrades();
-                    break;
-                case 4:
-                    generateTranscripts();
-                    break;
-                case 5:
-                    viewCourses();
-                    break;
-                case 6:
-                    analyzePerformance();
-                    break;
-                case 7:
-                    changeCurrentInfo();
-                    break;
-                case 8:
-                    System.out.println("Thank you for using the system. Have a nice day!");
-                    break;
-                default:
-                    System.out.println("Invalid choice");
+        try{
+            int choice = 0;
+            while(choice != 8){
+                displayOptions();
+                System.out.println("Enter your choice: ");
+                choice = sc.nextInt();
+                switch(choice){
+                    case 1:
+                        addCourse();
+                        break;
+                    case 2:
+                        dropCourse();
+                        break;
+                    case 3:
+                        viewGrades();
+                        break;
+                    case 4:
+                        generateTranscripts();
+                        break;
+                    case 5:
+                        viewCourses();
+                        break;
+                    case 6:
+                        analyzePerformance();
+                        break;
+                    case 7:
+                        changeCurrentInfo();
+                        break;
+                    case 8:
+                        System.out.println("Thank you for using the system. Have a nice day!");
+                        break;
+                    default:
+                        System.out.println("Invalid choice");
+                }
             }
+        }
+        catch(Exception e){
+            System.out.println("Error: " + e);
         }
     }
 
@@ -70,30 +76,26 @@ public class AcademicSection extends Person{
         System.out.println(options);
     }
 
-    public String getEventInfo(){
+    private String getEventInfo() throws Exception{
         // 1. Get event info from CurrentInfo(field, value) table
         // 2. Return the event value
 
         // Step 1: Get event info from CurrentInfo(field, value) table
         String query = "SELECT value FROM CurrentInfo WHERE field = 'current_event_id';";
         String event = "";
-        try{
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(query);
-            if(rs.next()){
-                event = rs.getString("value");
-            }
-            else{
-                return "Error: Event not found";
-            }
+            
+        ResultSet rs = cm.executeQuery(query);
+        if(rs.next()){
+            event = rs.getString("value");
         }
-        catch(Exception e){
-            return "Error: " + e;
+        else{
+            return "Error: Event not found";
         }
+
         return event;
     }
 
-    private void addCourse(){
+    private void addCourse() throws Exception{
         // 1. Check if course catalog modification is open
         // 2. Get course details
         // 3. Insert into table Course(id, name, l, t, p, credits, department)
@@ -127,20 +129,35 @@ public class AcademicSection extends Person{
         System.out.println("Department: ");
         String department = sc.nextLine();
 
+        System.out.println("Add the course as program core for different batches? (y/n)");
+        String choice = sc.nextLine();
+
+        if(choice.equals("y")){
+            System.out.println("Enter batch ids: ");
+            String batchIds = sc.nextLine();
+            String[] batchIdsArray = batchIds.split(" ");
+
+            for(int i = 0; i < batchIdsArray.length; i++){
+                // Check if batch exists in table Batch(id, semester, year, department)
+                String query = "SELECT * FROM Batch WHERE id = '" + batchIdsArray[i] + "';";
+                ResultSet rs = cm.executeQuery(query);
+                if(!rs.next()){
+                    System.out.println("Error: Batch " + batchIdsArray[i] + " does not exist");
+                    continue;
+                }
+
+                query = "INSERT INTO ProgramCore(course_id, batch_id) VALUES('" + id + "', '" + batchIdsArray[i] + "');";
+                cm.executeUpdate(query);
+            }
+        }
+
         // Step 3: Insert into table Course(id, name, l, t, p, credits, department)
         String query = "INSERT INTO Course(id, name, l, t, p, credits, department) VALUES( '" + id + "', '" + name + "', " + l + ", " + t + ", " + p + ", " + credits + ", '" + department + "');";
-        try{
-            Statement st = con.createStatement();
-            st.executeUpdate(query);
-            System.out.println("Course added successfully");
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
-
+        cm.executeUpdate(query);
+        System.out.println("Course added successfully");
     }
 
-    private void dropCourse(){
+    private void dropCourse() throws Exception{
         
         // 1. Check if course catalog modification is open
         // 2. Get course id
@@ -165,42 +182,32 @@ public class AcademicSection extends Person{
 
         // Step 3: Display course details
         String query = "SELECT * FROM Course WHERE id = '" + id + "';";
-        try{
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(query);
-            if(rs.next()){
-                System.out.println("Course details: ");
-                System.out.println("Course ID: " + rs.getString("id"));
-                System.out.println("Course name: " + rs.getString("name"));
-                System.out.println("Lecture hours: " + rs.getInt("l"));
-                System.out.println("Tutorial hours: " + rs.getInt("t"));
-                System.out.println("Practical hours: " + rs.getInt("p"));
-                System.out.println("Credits: " + rs.getInt("credits"));
-                System.out.println("Department: " + rs.getString("department"));
-            }
-            else{
-                System.out.println("Course not found");
-                return;
-            }
+            
+        ResultSet rs = cm.executeQuery(query);
+        if(rs.next()){
+            System.out.println("Course details: ");
+            System.out.println("Course ID: " + rs.getString("id"));
+            System.out.println("Course name: " + rs.getString("name"));
+            System.out.println("Lecture hours: " + rs.getInt("l"));
+            System.out.println("Tutorial hours: " + rs.getInt("t"));
+            System.out.println("Practical hours: " + rs.getInt("p"));
+            System.out.println("Credits: " + rs.getInt("credits"));
+            System.out.println("Department: " + rs.getString("department"));
         }
-        catch(Exception e){
-            System.out.println("Error: " + e);
+        else{
+            System.out.println("Course not found");
             return;
         }
+        
 
         // Step 4: Delete from table Course(id, name, l, t, p, credits, department)
-        query = "DELETE FROM Course WHERE id = '" + id + "';";
-        try{
-            Statement st = con.createStatement();
-            st.executeUpdate(query);
-            System.out.println("Course deleted successfully");
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
+        query = "DELETE FROM Course WHERE id = '" + id + "';"; 
+        cm.executeUpdate(query);
+        System.out.println("Course deleted successfully");
+        
     }
 
-    private void viewGrades(){
+    private void viewGrades() throws Exception{
         // 1. Take user input and apply filters(course_id, year, semester,entry_no) if any
         // 2. Display grades from CompletedCourse(entry_no, course_id, year, semester, grade)
 
@@ -245,107 +252,90 @@ public class AcademicSection extends Person{
         // Order by course_id, semester , year, entry_no
         query += " ORDER BY course_id, semester, year, entry_no;";
 
-        // Step 2: Display grades from CompletedCourse(entry_no, course_id, year, semester, grade)
-        try{
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(query);
-            System.out.println("Grades: ");
-            System.out.println("Entry number\tCourse ID\tYear\tSemester\tGrade");
-            while(rs.next()){
-                String entry = rs.getString("entry_no");
-                String course = rs.getString("course_id");
-                int yr = rs.getInt("year");
-                int sem = rs.getInt("semester");
-                String grade = rs.getString("grade");
-                System.out.format("%s\t\t%s\t\t%d\t%d\t\t%s\n", entry, course, yr, sem, grade); 
-            }
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
+        // Step 2: Display grades from CompletedCourse(entry_no, course_id, year, semester, grade)    
+        ResultSet rs = cm.executeQuery(query);
+        System.out.println("Grades: ");
+        System.out.println("Entry number\tCourse ID\tYear\tSemester\tGrade");
+        while(rs.next()){
+            String entry = rs.getString("entry_no");
+            String course = rs.getString("course_id");
+            int yr = rs.getInt("year");
+            int sem = rs.getInt("semester");
+            String grade = rs.getString("grade");
+            System.out.format("%s\t\t%s\t\t%d\t%d\t\t%s\n", entry, course, yr, sem, grade); 
         }
 
-    
     }
 
-    private void generateTranscripts(){
+    private void generateTranscripts() throws Exception{
         // 1. Generate transcript for all students for all semesters, one folder per semester per student
         // 2. Store in Transcripts folder
 
         // Step 1: Generate transcript for all students for all semesters, one folder per semester per student from CompletedCourse(entry_no, course_id, year, semester, grade)
         String query = "SELECT * FROM CompletedCourse ORDER BY entry_no, semester, year;";
-        try{
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(query);
-            String entry_no = "";
-            int semester = 0;
-            int year = 0;
-            String folder = "";
-            String file = "";
-            while(rs.next()){
-                String entry = rs.getString("entry_no");
-                String course = rs.getString("course_id");
-                int yr = rs.getInt("year");
-                int sem = rs.getInt("semester");
-                String grade = rs.getString("grade");
+        ResultSet rs = cm.executeQuery(query);
+        String entry_no = "";
+        int semester = 0;
+        int year = 0;
+        String folder = "";
+        String file = "";
+        while(rs.next()){
+            String entry = rs.getString("entry_no");
+            String course = rs.getString("course_id");
+            int yr = rs.getInt("year");
+            int sem = rs.getInt("semester");
+            String grade = rs.getString("grade");
 
-                int credits = 0;
-                String courseName = "";
-                String query2 = "SELECT * FROM Course WHERE id = '" + course + "';";
-                try{
-                    Statement st2 = con.createStatement();
-                    ResultSet rs2 = st2.executeQuery(query2);
-                    if(rs2.next()){
-                        credits = rs2.getInt("credits");
-                        courseName = rs2.getString("name");
-                    }
-                    else{
-                        System.out.println("Error: Course not found");
-                        return;
-                    }
-                }
-                catch(Exception e){
-                    System.out.println("Error1: " + e);
-                }
+            int credits = 0;
+            String courseName = "";
+            String query2 = "SELECT * FROM Course WHERE id = '" + course + "';";
 
-                if(!entry.equals(entry_no) || sem != semester || yr != year){
-                    // Create new folder
-                    entry_no = entry;
-                    semester = sem;
-                    year = yr;
-                    folder = "Transcripts/" + entry_no + "/" + year + "_" + semester + "/";
-
-                    // Create folder
-                    File f = new File(folder);
-                    f.mkdirs();
-
-                    // Create file
-                    file = folder + entry_no + ".txt";
-                    f = new File(file);
-                    f.createNewFile();
-
-                    // Write to file
-                    FileWriter fw = new FileWriter(file);
-                    fw.write("Transcript for " + entry_no + " for " + year + "_" + semester + " semester is: \n\n");
-                    fw.write(String.format("%-10s\t%-50s\t%-10s\t%-10s\n", "Course ID", "Course Name", "Credits", "Grade"));
-                    fw.write(String.format("%-10s\t%-50s\t%-10d\t%-10s\n", course, courseName, credits, grade));
-                    fw.close();
-                }
-                else{
-                    // Write to file
-                    FileWriter fw = new FileWriter(file,true);
-                    // Write in file with proper formatting and uniform spacing
-                    fw.write(String.format("%-10s\t%-50s\t%-10d\t%-10s\n", course, courseName, credits, grade));
-                    fw.close();
-                }
-    
+            ResultSet rs2 = cm.executeQuery(query2);
+            if(rs2.next()){
+                credits = rs2.getInt("credits");
+                courseName = rs2.getString("name");
             }
-        }
-        catch(Exception e){
-            System.out.println("Error2: " + e);
+            else{
+                System.out.println("Error: Course not found");
+                return;
+            }
+
+
+            if(!entry.equals(entry_no) || sem != semester || yr != year){
+                // Create new folder
+                entry_no = entry;
+                semester = sem;
+                year = yr;
+                folder = "Transcripts/" + entry_no + "/" + year + "_" + semester + "/";
+
+                // Create folder
+                File f = new File(folder);
+                f.mkdirs();
+
+                // Create file
+                file = folder + entry_no + ".txt";
+                f = new File(file);
+                f.createNewFile();
+
+                // Write to file
+                FileWriter fw = new FileWriter(file);
+                fw.write("Transcript for " + entry_no + " for " + year + "_" + semester + " semester is: \n\n");
+                fw.write(String.format("%-10s\t%-50s\t%-10s\t%-10s\n", "Course ID", "Course Name", "Credits", "Grade"));
+                fw.write(String.format("%-10s\t%-50s\t%-10d\t%-10s\n", course, courseName, credits, grade));
+                fw.close();
+            }
+            else{
+                // Write to file
+                FileWriter fw = new FileWriter(file,true);
+                // Write in file with proper formatting and uniform spacing
+                fw.write(String.format("%-10s\t%-50s\t%-10d\t%-10s\n", course, courseName, credits, grade));
+                fw.close();
+            }
+
         }
     }
 
-    private void viewCourses(){
+    private void viewCourses() throws Exception{
         // 1. Take user input and apply filters if any
         // 2. Display course details
 
@@ -367,34 +357,28 @@ public class AcademicSection extends Person{
             }
         }
         
-        // Step 2: Display course details
-        try{
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(query);
-            System.out.println("Course details: ");
-            System.out.format("%-10s\t%-50s\t%-10s\t%-10s\t%-10s\t%-10s\t%-10s\n", "Course ID", "Course Name", "L", "T", "P", "Credits", "Department");
-            while(rs.next()){
-                String id = rs.getString("id");
-                String name = rs.getString("name");
-                int l = rs.getInt("l");
-                int t = rs.getInt("t");
-                int p = rs.getInt("p");
-                int cred = rs.getInt("credits");
-                String dept = rs.getString("department");
-                System.out.format("%-10s\t%-50s\t%-10d\t%-10d\t%-10d\t%-10d\t%-10s\n", id, name, l, t, p, cred, dept);
-            }
+        // Step 2: Display course details    
+        ResultSet rs = cm.executeQuery(query);
+        System.out.println("Course details: ");
+        System.out.format("%-10s\t%-50s\t%-10s\t%-10s\t%-10s\t%-10s\t%-10s\n", "Course ID", "Course Name", "L", "T", "P", "Credits", "Department");
+        while(rs.next()){
+            String id = rs.getString("id");
+            String name = rs.getString("name");
+            int l = rs.getInt("l");
+            int t = rs.getInt("t");
+            int p = rs.getInt("p");
+            int cred = rs.getInt("credits");
+            String dept = rs.getString("department");
+            System.out.format("%-10s\t%-50s\t%-10d\t%-10d\t%-10d\t%-10d\t%-10s\n", id, name, l, t, p, cred, dept);
         }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
+        
+    }
+
+    private void analyzePerformance() throws Exception{
 
     }
 
-    private void analyzePerformance(){
-
-    }
-
-    private void changeCurrentInfo(){
+    private void changeCurrentInfo() throws Exception{
         // 1. Take user input regarding which field to change
         // 2. Check if the field exists in CurrentInfo(field, value)
         // 3. Take user input for new value
@@ -405,18 +389,13 @@ public class AcademicSection extends Person{
         String field = sc.nextLine();
 
         // Step 2: Check if the field exists in CurrentInfo(field, value)
-        String query = "SELECT * FROM CurrentInfo WHERE field = '" + field + "';";
-        try{
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(query);
-            if(!rs.next()){
-                System.out.println("Error: Field does not exist");
-                return;
-            }
+        String query = "SELECT * FROM CurrentInfo WHERE field = '" + field + "';";    
+        ResultSet rs = cm.executeQuery(query);
+        if(!rs.next()){
+            System.out.println("Error: Field does not exist");
+            return;
         }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
+        
 
         // Step 3: Take user input for new value
         System.out.println("Enter new value: ");
@@ -424,17 +403,11 @@ public class AcademicSection extends Person{
 
         // Step 4: Update the database
         query = "UPDATE CurrentInfo SET value = '" + value + "' WHERE field = '" + field + "';";
-        try{
-            Statement st = con.createStatement();
-            st.executeUpdate(query);
-            System.out.println("Updated successfully");
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
+        cm.executeUpdate(query);
+        System.out.println("Updated successfully");
     }
 
-    private void graduationCheck(){
+    private void graduationCheck() throws Exception{
         // 1. Take user input for entry number
         // 2. Check if the student has completed all the program cores for his/her batch
         // 3. Check if the student has completed minimum elective credits for his/her batch

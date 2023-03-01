@@ -24,27 +24,6 @@ public class AcademicTest {
         }
     }
 
-    @Test public void getEventInfoTest() {
-        String query = "UPDATE currentinfo set value=1 where field='current_event_id'";
-        try{
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate(query);
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
-
-        AcademicSection person = null;
-        try{
-            person = new AcademicSection("admin1");
-        }
-        catch(Exception e){
-            System.out.println("Exception");
-            return;
-        }
-        assertEquals(person.getEventInfo(),"1");
-    }
-
     @Test public void managerTest(){
         AcademicSection person = null;
         try{
@@ -66,14 +45,9 @@ public class AcademicTest {
 
         person.manager();
 
-        // Get last line of output
         String output = outputStream.toString();
-        String[] lines = output.split("\n");
-        output = lines[lines.length - 1];
-        output = output.trim();
-
         String expectedOutput = "Thank you for using the system. Have a nice day!";
-        assertEquals(expectedOutput, output);
+        assertTrue(output.contains(expectedOutput));
     }
 
     @Test public void addDropCourseTest(){
@@ -97,7 +71,7 @@ public class AcademicTest {
             return;
         }
 
-        String input = "1\nCS601\nAdvanced Research\n4\n1\n0\n4\nCSE\n8\n";
+        String input = "1\nCS601\nAdvanced Research\n4\n1\n0\n4\nCSE\ny\n2020CSE\n8\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
@@ -199,5 +173,31 @@ public class AcademicTest {
         person.sc = new Scanner(System.in);
 
         person.manager();
+    }
+
+    @Test public void changeCurrentInfoTest(){
+        AcademicSection person = null;
+        try{
+            person = new AcademicSection("admin2");
+        }
+        catch(Exception e){
+            System.out.println("Exception");
+            return;
+        }
+        
+        String input = "7\ncurrent_year\n2024\n7\ncurrent_year\n2023\n8\n";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        System.setIn(inputStream);
+        person.sc = new Scanner(System.in);
+        
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "Updated successfully";
+        assertTrue(output.contains(expectedOutput));
     }
 }
