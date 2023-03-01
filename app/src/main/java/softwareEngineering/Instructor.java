@@ -1,7 +1,6 @@
 package softwareEngineering;
 import java.io.*;
 import java.sql.*;
-import java.util.*;
 
 // TODO: Giving the option to add a course offering and decide the program elective or not
 
@@ -90,8 +89,7 @@ public class Instructor extends Person{
 
     private String courseExist(String course_id) throws Exception{
         String query = "SELECT * FROM course WHERE id = '" + course_id + "'";
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
+        ResultSet rs = cm.executeQuery(query);
         if(!rs.next()){
             System.out.println("Course does not exist");
             return "NOT EXIST";
@@ -133,7 +131,7 @@ public class Instructor extends Person{
         String currentYear = "";
 
         // Get year and semester from CurrentInfo table
-        ResultSet rs = stmt.executeQuery("SELECT * FROM currentinfo");
+        ResultSet rs = cm.executeQuery("SELECT * FROM currentinfo");
         // Values in currentinfo are of the form (field, value)
         while(rs.next()){
             if(rs.getString("field").equals("current_year")){
@@ -146,7 +144,7 @@ public class Instructor extends Person{
 
 
         String query = "SELECT * FROM courseoffering WHERE course_id = '" + courseId + "' AND semester = '" + currentSem + "' AND year = '" + currentYear + "'";
-        ResultSet rs = stmt.executeQuery(query);
+        rs = cm.executeQuery(query);
         if(rs.next()){
             if(rs.getString("instructor").equals(username)){
                 System.out.println("Course is already offered by you");
@@ -170,13 +168,11 @@ public class Instructor extends Person{
         // Insert into CourseOffering(course_id, year, semester, instructor, cgpa) table
         query = "INSERT INTO courseoffering VALUES('" + courseId + "', '" + currentYear + "', '" + currentSem + "', '" + username + "', '" + cgpa + "')";
 
-            cm.executeQuery(query);
-            System.out.println("Course offering added successfully");
-
-
+        cm.executeUpdate(query);
+        System.out.println("Course offering added successfully!\n");
     }
 
-    private void removeCourseOffering(){
+    private void removeCourseOffering() throws Exception{
         // 1. Check if the course offering is open
         // 2. Get the course id
         // 3. Check if the course exists
@@ -207,7 +203,7 @@ public class Instructor extends Person{
         String currentYear = "";
 
         // Get year and semester from CurrentInfo table
-            ResultSet rs = stmt.executeQuery("SELECT * FROM currentinfo");
+            ResultSet rs = cm.executeQuery("SELECT * FROM currentinfo");
             // Values in currentinfo are of the form (field, value)
             while(rs.next()){
                 if(rs.getString("field").equals("current_year")){
@@ -219,22 +215,20 @@ public class Instructor extends Person{
             }
 
         String query = "SELECT * FROM courseoffering WHERE course_id = '" + courseId + "' AND semester = '" + currentSem + "' AND year = '" + currentYear + "' AND instructor = '" + username + "'";
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            if(!rs.next()){
-                System.out.println("Course is not offered by you");
-                return;
-            }
+        rs = cm.executeQuery(query);
+        if(!rs.next()){
+            System.out.println("Course is not offered by you");
+            return;
+        }
 
         // Step 5: If yes, remove the course offering
         query = "DELETE FROM courseoffering WHERE course_id = '" + courseId + "' AND semester = '" + currentSem + "' AND year = '" + currentYear + "' AND instructor = '" + username + "'";
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate(query);
-            System.out.println("Course offering removed successfully");
+        cm.executeUpdate(query);
+        System.out.println("Course offering removed successfully!\n");
 
     }
 
-    private void viewGrades(){
+    private void viewGrades() throws Exception{
         // 1. Get the course id
         // 2. Check if the course exists
         // 3. Check if the course is offered by the instructor
@@ -252,8 +246,7 @@ public class Instructor extends Person{
 
         // Step 3: Check if the course is offered by the instructor in CourseOffering(course_id, year, semester, instructor,cgpa) table
         String query = "SELECT * FROM courseoffering WHERE course_id = '" + courseId + "' AND instructor = '" + username + "'";
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            ResultSet rs = cm.executeQuery(query);
             if(!rs.next()){
                 System.out.println("Course is not offered by you");
                 return;
@@ -281,9 +274,7 @@ public class Instructor extends Person{
         query += " ORDER BY course_id, semester, year, entry_no;";
 
         // Step 5: Display grades from CompletedCourse(entry_no, course_id, year, semester, grade)
-        try{
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(query);
+            rs = cm.executeQuery(query);
             System.out.println("Grades: ");
             System.out.println("Entry number\tCourse ID\tYear\tSemester\tGrade");
             while(rs.next()){
@@ -294,13 +285,9 @@ public class Instructor extends Person{
                 String grade = rs.getString("grade");
                 System.out.format("%s\t\t%s\t\t%d\t%d\t\t%s\n", entry, course, yr, sem, grade); 
             }
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
     }
 
-    public String viewPreviousCourses(){
+    private void viewPreviousCourses() throws Exception{
         // 1. Get the current semester and year from CurrentInfo table
         // 2. Get the previous offering by the instructor except the current semester and year from CourseOffering(course_id, year, semester, instructor) table
 
@@ -308,9 +295,7 @@ public class Instructor extends Person{
         String currentSem = "";
         String currentYear = "";
 
-        try{
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM currentinfo");
+            ResultSet rs = cm.executeQuery("SELECT * FROM currentinfo");
             // Values in currentinfo are of the form (field, value)
             while(rs.next()){
                 if(rs.getString("field").equals("current_year")){
@@ -320,49 +305,31 @@ public class Instructor extends Person{
                     currentSem = rs.getString("value");
                 }
             }
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-            return "Error: " + e;
-        }
+
 
         // Step 2: Get the previous offering by the instructor except the current semester and year from CourseOffering(course_id, year, semester, instructor,cgpa) table
         String query = "SELECT * FROM courseoffering WHERE instructor = '" + username + "' AND ( year != '" + currentYear + "' OR semester != '" + currentSem + "')";
-        try{
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            System.out.println("Previous courses: ");
-            System.out.println("Course ID\tCourse Name\t\t\t\t\tSemester\tYear");
-            while(rs.next()){
-                String courseId = rs.getString("course_id");
-                String semester = rs.getString("semester");
-                String year = rs.getString("year");
-                String courseName = "";
-                // Get the course name from Course table
-                query = "SELECT * FROM course WHERE id = '" + courseId + "'";
-                try{
-                    Statement stmt2 = con.createStatement();
-                    ResultSet rs2 = stmt2.executeQuery(query);
-                    if(rs2.next()){
-                        courseName = rs2.getString("name");
-                    }
+
+        rs = cm.executeQuery(query);
+        System.out.println("Previous courses: ");
+        System.out.println("Course ID\tCourse Name\t\t\t\t\tSemester\tYear");
+        while(rs.next()){
+            String courseId = rs.getString("course_id");
+            String semester = rs.getString("semester");
+            String year = rs.getString("year");
+            String courseName = "";
+            // Get the course name from Course table
+            query = "SELECT * FROM course WHERE id = '" + courseId + "'";
+                ResultSet rs2 = cm.executeQuery(query);
+                if(rs2.next()){
+                    courseName = rs2.getString("name");
                 }
-                catch(Exception e){
-                    System.out.println("Error: " + e);
-                    return "Error: " + e;
-                }
-                System.out.format("%-15s\t%-45s\t%-15s\t%-15s\n", courseId, courseName, semester, year);
-            }
-            return "Success";
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-            return "Error: " + e;
-        }
-             
+
+            System.out.format("%-15s\t%-45s\t%-15s\t%-15s\n", courseId, courseName, semester, year);
+        } 
     }
 
-    public String viewCurrentCourses(){
+    private void viewCurrentCourses() throws Exception{
         // 1. Get the current semester and year from CurrentInfo table
         // 2. Get the current offering by the instructor from CourseOffering(course_id, year, semester, instructor, cgpa) table
 
@@ -370,9 +337,7 @@ public class Instructor extends Person{
         String currentSem = "";
         String currentYear = "";
 
-        try{
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM currentinfo");
+            ResultSet rs = cm.executeQuery("SELECT * FROM currentinfo");
             // Values in currentinfo are of the form (field, value)
             while(rs.next()){
                 if(rs.getString("field").equals("current_year")){
@@ -382,49 +347,30 @@ public class Instructor extends Person{
                     currentSem = rs.getString("value");
                 }
             }
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-            return "Error: " + e;
-        }
+
 
         // Step 2: Get the current offering by the instructor from CourseOffering(course_id, year, semester, instructor, cgpa) table
         String query = "SELECT * FROM courseoffering WHERE instructor = '" + username + "' AND year = '" + currentYear + "' AND semester = '" + currentSem + "'";
-        try{
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-            System.out.println("Courses offered by you in semester " + currentSem + " and year " + currentYear + ": ");
-            System.out.println("Course ID\tCourse Name\t\t\t\t\tSemester\tYear");
-            while(rs.next()){
-                String courseId = rs.getString("course_id");
-                String semester = rs.getString("semester");
-                String year = rs.getString("year");
-                String courseName = "";
-                // Get the course name from Course table
-                query = "SELECT * FROM course WHERE id = '" + courseId + "'";
-                try{
-                    Statement stmt2 = con.createStatement();
-                    ResultSet rs2 = stmt2.executeQuery(query);
-                    if(rs2.next()){
-                        courseName = rs2.getString("name");
-                    }
-                }
-                catch(Exception e){
-                    System.out.println("Error: " + e);
-                    return "Error: " + e;
-                }
-                System.out.format("%-15s\t%-45s\t%-15s\t%-15s\n", courseId, courseName, semester, year);
+        rs = cm.executeQuery(query);
+        System.out.println("Courses offered by you in semester " + currentSem + " and year " + currentYear + ": ");
+        System.out.println("Course ID\tCourse Name\t\t\t\t\tSemester\tYear");
+        while(rs.next()){
+            String courseId = rs.getString("course_id");
+            String semester = rs.getString("semester");
+            String year = rs.getString("year");
+            String courseName = "";
+            // Get the course name from Course table
+            query = "SELECT * FROM course WHERE id = '" + courseId + "'";
+            ResultSet rs2 = cm.executeQuery(query);
+            if(rs2.next()){
+                courseName = rs2.getString("name");
             }
-            return "Success";
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-            return "Error: " + e;
-        }
 
+            System.out.format("%-15s\t%-45s\t%-15s\t%-15s\n", courseId, courseName, semester, year);
+        }
     }
 
-    private void updateGrades(){
+    private void updateGrades() throws Exception{
         // 1. Check if the grade submission is open
         // 2. Get the course id
         // 3. Check if the course exists
@@ -433,7 +379,6 @@ public class Instructor extends Person{
         // 6. Save this file in csv format
 
         // Step 1: Check if the grade submission is open
-        try{
             String event = getEventInfo();
             if(event.equals("Error: Event not found")){
                 return;
@@ -454,8 +399,7 @@ public class Instructor extends Person{
 
             // Step 3: Check if the course is offered by the instructor in CourseOffering(course_id, year, semester, instructor,cgpa) table
             String query = "SELECT * FROM courseoffering WHERE course_id = '" + courseId + "' AND instructor = '" + username + "'";
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
+            ResultSet rs = cm.executeQuery(query);
             if(!rs.next()){
                 System.out.println("Course is not offered by you");
                 return;
@@ -465,8 +409,7 @@ public class Instructor extends Person{
 
             // Step 4: If yes, get all the students enrolled in the course from EnrolledCourse(entry_no, course_id, year, semester) using copy command
             query = "SELECT * FROM enrolledcourse WHERE course_id = '" + courseId + "'";
-            stmt = con.createStatement();
-            rs = stmt.executeQuery(query);
+            rs = cm.executeQuery(query);
             if(!rs.next()){
                 System.out.println("No students enrolled in the course");
                 return;
@@ -476,8 +419,7 @@ public class Instructor extends Person{
                 String filePath = "C:\\Users\\Public\\Documents\\update_grades.csv";
                 query = "COPY (" + query + ") TO '" + filePath + "' DELIMITER ',' CSV HEADER";
                 // System.out.println(query);
-                stmt = con.createStatement();
-                stmt.executeUpdate(query);
+                cm.executeUpdate(query);
                 System.out.println("File saved successfully in " + filePath);
             }
             
@@ -535,8 +477,7 @@ public class Instructor extends Person{
 
                         // Step 2: Check whether only the grades are updated and not the other fields, check whether there is a entry in enrolledcourse table for these fields
                         query = "SELECT * FROM enrolledcourse WHERE entry_no = '" + entryNo + "' AND course_id = '" + course_id + "' AND year = '" + year + "' AND semester = '" + semester + "'";
-                        stmt = con.createStatement();
-                        rs = stmt.executeQuery(query);
+                        rs = cm.executeQuery(query);
                         if(!rs.next()){
                             System.out.println("Grades not updated for entry no: " + entryNo + " Data in csv file is not correct");
                             continue;
@@ -544,19 +485,16 @@ public class Instructor extends Person{
                         
                         // Step 3: Update the grades in the enrolledcourse table
                         query = "UPDATE enrolledcourse SET grade = '" + grade + "' WHERE entry_no = '" + entryNo + "' AND course_id = '" + course_id + "' AND year = '" + year + "' AND semester = '" + semester + "'";
-                        stmt = con.createStatement();
-                        stmt.executeUpdate(query);
+                        cm.executeUpdate(query);
                     }
-                } 
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Grades updated successfully!");
             }
             else{
                 System.out.println("Grades not updated");
             }
-        }
-        catch (Exception e) {
-            System.out.println("Error: " + e);
-            return;
-        }
     }
 
 }
