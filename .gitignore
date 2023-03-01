@@ -1,0 +1,45 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+# Ignore META-INF and org directories
+META-INF
+org
+
+# Ignore configuration files
+*.properties
+
+# IDE directories
+.idea/
+*.iml
+
+# Gradle wrapper
+gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
+
+# Compiled Java class files
+*.class
+
+# Log files
+*.log
+
+# Eclipse project files
+.project
+.settings/
+
+# IntelliJ project files
+*.ipr
+*.iws
+*.idea_modules/
+
+# Maven files
+target/
+pom.xml.*
+
+# VS Code files
+.vscode/
+
+# Todo
+Todo

@@ -1,0 +1,4 @@
+Transcript for admin for 2022_4 semester is: 
+
+Course ID 	Course Name                                       	Credits   	Grade     
+CS103     	Algorithms                                        	4         	C         
