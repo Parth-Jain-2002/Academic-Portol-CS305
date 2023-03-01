@@ -75,13 +75,31 @@ public class AcademicTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
         person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "Course added successfully";
+        assertTrue(output.contains(expectedOutput));
 
         input = "2\nCS601\n8\n";
         inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
+
+        outputStream = new ByteArrayOutputStream();
+        printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
         person.manager();
+
+        output = outputStream.toString();
+        expectedOutput = "Course deleted successfully";
+        assertTrue(output.contains(expectedOutput));
     }
 
     @Test public void viewGradesTest(){
@@ -141,7 +159,16 @@ public class AcademicTest {
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
 
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
         person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "Transcripts generated successfully";
+
+        assertTrue(output.contains(expectedOutput));
     }
 
     @Test public void viewCoursesTest(){

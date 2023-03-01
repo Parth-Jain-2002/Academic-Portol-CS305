@@ -333,6 +333,7 @@ public class AcademicSection extends Person{
             }
 
         }
+        System.out.println("Transcripts generated successfully");
     }
 
     private void viewCourses() throws Exception{

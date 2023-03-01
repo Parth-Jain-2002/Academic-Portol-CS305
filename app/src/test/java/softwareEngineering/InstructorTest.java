@@ -70,7 +70,7 @@ public class InstructorTest {
             return;
         }
 
-        String input = "1\nCS301\n5\n2\nCS301\n7\n";
+        String input = "1\nCS301\n5\ny\n2020CSE\n2\nCS301\n7\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
