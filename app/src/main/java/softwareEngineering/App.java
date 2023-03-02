@@ -3,21 +3,13 @@
  */
 package softwareEngineering;
 import java.sql.*;
-import java.util.*;
 
 public class App {
 
     public static Person handleAuth(String userName, String userPassword) throws Exception{
-        ResourceBundle rd = ResourceBundle.getBundle("config");
-        String url = rd.getString("url"); // localhost:5432
-        String username = rd.getString("username");
-        String password = rd.getString("password");
-
-        Class.forName("org.postgresql.Driver");
-        Connection con = DriverManager.getConnection(url, username, password);
+        ConnectionManager cm = ConnectionManager.getCM("academicsystem");
         
-        Statement stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE username = '" + userName + "' AND password = '" + userPassword + "'");
+        ResultSet rs = cm.executeQuery("SELECT * FROM users WHERE username = '" + userName + "' AND password = '" + userPassword + "'");
 
         if(rs.next()){
             String role = rs.getString("role");

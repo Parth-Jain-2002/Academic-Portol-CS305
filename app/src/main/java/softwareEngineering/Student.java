@@ -14,7 +14,7 @@ public class Student extends Person{
         this.role = "student";
 
         sc = new Scanner();
-        cm = new ConnectionManager();
+        cm = ConnectionManager.getCM("academicsystem");
         con = cm.getConnection();
     }
 

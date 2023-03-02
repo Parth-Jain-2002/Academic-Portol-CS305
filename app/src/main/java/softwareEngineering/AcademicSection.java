@@ -16,7 +16,7 @@ public class AcademicSection extends Person{
         this.role = "academic";
 
         sc = new Scanner();
-        cm = new ConnectionManager();
+        cm = ConnectionManager.getCM("academicsystem");
         con = cm.getConnection();
 
     }
@@ -45,7 +45,7 @@ public class AcademicSection extends Person{
                         viewCourses();
                         break;
                     case 6:
-                        analyzePerformance();
+                        graduationCheck();
                         break;
                     case 7:
                         changeCurrentInfo();
@@ -319,8 +319,20 @@ public class AcademicSection extends Person{
 
                 // Write to file
                 FileWriter fw = new FileWriter(file);
+                
+                fw.write("-------------------------------------------- INDIAN INSTITUTE OF TECHNOLOGY, ROPAR --------------------------------------------\n");
+                fw.write("-------------------------------------------------------------------------------------------------------------------------------\n");
+                fw.write("---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------\n\n\n");
+
+                // Name of student, entry number, department in new lines
+                //fw.write(String.format("NAME: %s\n", name));
+                fw.write(String.format("ENTRY NUMBER: %s\n", entry_no));
+                //fw.write(String.format("DEPARTMENT: %s\n\n", department));
+                
                 fw.write("Transcript for " + entry_no + " for " + year + "_" + semester + " semester is: \n\n");
+                fw.write("-------------------------------------------------------------------------------------------------------------------------------\n");
                 fw.write(String.format("%-10s\t%-50s\t%-10s\t%-10s\n", "Course ID", "Course Name", "Credits", "Grade"));
+                fw.write("-------------------------------------------------------------------------------------------------------------------------------\n");
                 fw.write(String.format("%-10s\t%-50s\t%-10d\t%-10s\n", course, courseName, credits, grade));
                 fw.close();
             }
@@ -373,10 +385,6 @@ public class AcademicSection extends Person{
             System.out.format("%-10s\t%-50s\t%-10d\t%-10d\t%-10d\t%-10d\t%-10s\n", id, name, l, t, p, cred, dept);
         }
         
-    }
-
-    private void analyzePerformance() throws Exception{
-
     }
 
     private void changeCurrentInfo() throws Exception{

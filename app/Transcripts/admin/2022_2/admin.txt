@@ -4,10 +4,9 @@
 
 
 ENTRY NUMBER: admin
-Transcript for admin for 2022_3 semester is: 
+Transcript for admin for 2022_2 semester is: 
 
 -------------------------------------------------------------------------------------------------------------------------------
 Course ID 	Course Name                                       	Credits   	Grade     
 -------------------------------------------------------------------------------------------------------------------------------
-CS101     	Introduction to Computer Science                  	4         	A         
-CS102     	Data Structures                                   	4         	A-        
+CS104     	Operating Systems                                 	4         	B         

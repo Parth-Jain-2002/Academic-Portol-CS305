@@ -3,25 +3,14 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import java.io.*;
 import java.sql.*;
-import java.util.*;
 
 public class AcademicTest {
     Connection con;
+    ConnectionManager cm;
     
     public AcademicTest(){
-        ResourceBundle rd = ResourceBundle.getBundle("config");
-        String url = rd.getString("url"); // localhost:5432
-        String username = rd.getString("username");
-        String password = rd.getString("password");
-
-        try{
-            Class.forName("org.postgresql.Driver");
-            con = DriverManager.getConnection(url, username, password);
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-            return;
-        }
+        cm = ConnectionManager.getCM("academicsystemtest");
+        con = cm.getConnection();
     }
 
     @Test public void managerTest(){
@@ -53,8 +42,7 @@ public class AcademicTest {
     @Test public void addDropCourseTest(){
         String query = "UPDATE currentinfo set value=1 where field='current_event_id'";
         try{
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate(query);
+            cm.executeUpdate(query);
         }
         catch(Exception e){
             System.out.println("Error: " + e);
@@ -212,7 +200,7 @@ public class AcademicTest {
             return;
         }
         
-        String input = "7\ncurrent_year\n2024\n7\ncurrent_year\n2023\n8\n";
+        String input = "7\ncurrent_year\n2024\n7\ncurrent_year\n2023\n7\ncurrent_time\n8\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
@@ -225,6 +213,10 @@ public class AcademicTest {
 
         String output = outputStream.toString();
         String expectedOutput = "Updated successfully";
+        assertTrue(output.contains(expectedOutput));
+
+        output = outputStream.toString();
+        expectedOutput = "Error: Field does not exist";
         assertTrue(output.contains(expectedOutput));
     }
 }

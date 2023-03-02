@@ -9,32 +9,20 @@ import java.util.*;
 public class StudentTest {
 
     Connection con;
+    ConnectionManager cm;
     
     public StudentTest(){
-        ResourceBundle rd = ResourceBundle.getBundle("config");
-        String url = rd.getString("url"); // localhost:5432
-        String username = rd.getString("username");
-        String password = rd.getString("password");
+        cm = ConnectionManager.getCM("academicsystemtest");
+        con = cm.getConnection();
+    }
 
-        try{
-            Class.forName("org.postgresql.Driver");
-            con = DriverManager.getConnection(url, username, password);
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-            return;
-        }
+    @Before public void setUp(){
+        cm.runScript("../Sql_files/addDataTest.sql");
     }
 
     @Test public void courseRegisterationTest(){
         String query = "UPDATE currentinfo set value=3 where field='current_event_id'";
-        try{
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate(query);
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-        }
+        cm.executeUpdate(query);
 
         Student person = null;
         try{
@@ -46,10 +34,12 @@ public class StudentTest {
 
         if(person == null) return;
 
-        String input = "2\nCS202\n1\nCS202\n7\n";
+        String input = "1\nCS202\n2\nCS202\n7\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
         
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
@@ -58,12 +48,13 @@ public class StudentTest {
         person.manager();
 
         String output = outputStream.toString();
-        String expectedOutput = "You have been deregistered from the course";
+        String expectedOutput = "You have been registered for the course";
         assertTrue(output.contains(expectedOutput));
 
         output = outputStream.toString();
-        expectedOutput = "You have been registered for the course";     
+        expectedOutput = "You have been deregistered from the course";     
         assertTrue(output.contains(expectedOutput));
+        
     }
 
     @Test public void getCourseInfoTest(){
@@ -81,6 +72,8 @@ public class StudentTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
         
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
@@ -108,6 +101,8 @@ public class StudentTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
         
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
@@ -118,7 +113,6 @@ public class StudentTest {
         String output = outputStream.toString();
         String expectedOutput = "You are registered for the following courses in the current semester:";
         assertTrue(output.contains(expectedOutput));
-
     }
 
     @Test public void viewCompletedCoursesTest(){
@@ -136,6 +130,8 @@ public class StudentTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
         
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
@@ -163,6 +159,8 @@ public class StudentTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
         
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
@@ -171,7 +169,7 @@ public class StudentTest {
         person.manager();
 
         String output = outputStream.toString();
-        String expectedOutput = "Your CGPA is: 8.333333333333334";
+        String expectedOutput = "Your CGPA is: 8.25";
         assertTrue(output.contains(expectedOutput));
     }
         

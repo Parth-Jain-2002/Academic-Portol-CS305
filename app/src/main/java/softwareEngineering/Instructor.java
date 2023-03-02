@@ -14,7 +14,7 @@ public class Instructor extends Person{
         this.role = "instructor";
 
         sc = new Scanner();
-        cm = new ConnectionManager();
+        cm = ConnectionManager.getCM("academicsystem");
         con = cm.getConnection();
     }
 
@@ -418,7 +418,7 @@ public class Instructor extends Person{
                 return;
             }
             else if(!event.equals("5")){
-                System.out.println("Course offering is not open");
+                System.out.println("Grade Submission is not open");
                 return;
             }
 
@@ -476,6 +476,7 @@ public class Instructor extends Person{
                     while ((line = br.readLine()) != null) {
                         // use comma as separator
                         String[] data = line.split(cvsSplitBy);
+                        System.out.println(data.length);
                         if(!(data.length==5 || data.length==4)){
                             System.out.println("Grades not updated. Data in csv file is not correct");
                             continue;
@@ -487,25 +488,28 @@ public class Instructor extends Person{
                         String semester = data[3];
                         String grade = "";
 
+                        if(data.length==5){
+                            grade = data[4];
+                        }
 
                         grade = grade.toUpperCase();
                         if(grade.length()>2) grade = grade.substring(0,2);
 
                         // If grade is empty, skip the entry
                         if(grade.equals("")){
-                            System.out.println("Grades not updated for entry no: " + entryNo + ". Data in csv file is not correct");
+                            System.out.println("Grades not provided for entry no: " + entryNo);
                             continue;
                         }
 
                         // Grade can be A, A-, B+, B, B-, C+, C, C-, D+, D, D-, E, F
                         if(!grade.equals("A") && !grade.equals("A-") && !grade.equals("B+") && !grade.equals("B") && !grade.equals("B-") && !grade.equals("C+") && !grade.equals("C") && !grade.equals("C-") && !grade.equals("D+") && !grade.equals("D") && !grade.equals("D-") && !grade.equals("E") && !grade.equals("F")){
-                            System.out.println("Grades not updated for entry no: " + entryNo + ". Data in csv file is not correct");
+                            System.out.println("Grades not updated for entry no: " + entryNo + " Grade is not correct");
                             continue;
                         }
                         
                         // Check if the courseId and course_id are same
                         if(!courseId.equals(course_id)){
-                            System.out.println("Grades not updated for entry no: " + entryNo + " Data in csv file is not correct");
+                            System.out.println("Grades not updated for entry no: " + entryNo + " Course id is not correct");
                             continue;
                         }
 
@@ -513,7 +517,7 @@ public class Instructor extends Person{
                         query = "SELECT * FROM enrolledcourse WHERE entry_no = '" + entryNo + "' AND course_id = '" + course_id + "' AND year = '" + year + "' AND semester = '" + semester + "'";
                         rs = cm.executeQuery(query);
                         if(!rs.next()){
-                            System.out.println("Grades not updated for entry no: " + entryNo + " Data in csv file is not correct");
+                            System.out.println("Grades not updated for entry no: " + entryNo + " Entry not found in enrolledcourse table");
                             continue;
                         }
                         

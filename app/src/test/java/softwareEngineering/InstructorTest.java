@@ -7,21 +7,16 @@ import java.util.*;
 
 public class InstructorTest {
     Connection con;
+    ConnectionManager cm;
     
     public InstructorTest(){
-        ResourceBundle rd = ResourceBundle.getBundle("config");
-        String url = rd.getString("url"); // localhost:5432
-        String username = rd.getString("username");
-        String password = rd.getString("password");
+        cm = ConnectionManager.getCM("academicsystemtest");
+        con = cm.getConnection();
+    }
 
-        try{
-            Class.forName("org.postgresql.Driver");
-            con = DriverManager.getConnection(url, username, password);
-        }
-        catch(Exception e){
-            System.out.println("Error: " + e);
-            return;
-        }
+    @Before public void setUp(){
+        // Run a sql script to reset the database
+        cm.runScript("../Sql_files/addDataTest.sql");
     }
     
     @Test public void managerTest(){
@@ -53,8 +48,7 @@ public class InstructorTest {
     @Test public void courseOfferingTest(){
         String query = "UPDATE currentinfo set value=2 where field='current_event_id'";
         try{
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate(query);
+            cm.executeUpdate(query);
         }
         catch(Exception e){
             System.out.println("Error: " + e);
@@ -74,6 +68,8 @@ public class InstructorTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
@@ -83,6 +79,7 @@ public class InstructorTest {
 
         String output = outputStream.toString();
         String expectedOutput = "Course offering added successfully!";
+        assertEquals(output, expectedOutput);
         assertTrue(output.contains(expectedOutput));
 
         expectedOutput = "Course offering removed successfully!\n";
@@ -175,8 +172,8 @@ public class InstructorTest {
     @Test public void updateGradesTest(){
         String query = "UPDATE currentinfo set value=5 where field='current_event_id'";
         try{
-            Statement stmt = con.createStatement();
-            stmt.executeUpdate(query);
+            
+            cm.executeUpdate(query);
         }
         catch(Exception e){
             System.out.println("Error: " + e);
@@ -195,6 +192,8 @@ public class InstructorTest {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
         
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
