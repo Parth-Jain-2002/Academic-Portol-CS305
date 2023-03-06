@@ -1,0 +1,18 @@
+-------------------------------------------- INDIAN INSTITUTE OF TECHNOLOGY, ROPAR --------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------
+
+
+ENTRY NUMBER: student2
+Transcript for student2 for 2020_2 semester is: 
+
+-------------------------------------------------------------------------------------------------------------------------------
+Course ID 	Course Name                                                                	Credits   	Grade     
+-------------------------------------------------------------------------------------------------------------------------------
+GE102     	Workshop Practice                                                          	2         	A-        
+GE105     	Engineering Drawing                                                        	1         	B         
+HS101     	History of Technology                                                      	3         	B-        
+GE101     	Technology Museum Lab                                                      	1         	A         
+MA102     	Linear Algebra, Integral Transforms and Special Functions                  	3         	A-        
+CS101     	Discrete Mathematical Structures                                           	3         	B         
+NC102     	NCC II                                                                     	1         	B-        

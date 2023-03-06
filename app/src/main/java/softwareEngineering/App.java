@@ -6,8 +6,8 @@ import java.sql.*;
 
 public class App {
 
-    public static Person handleAuth(String userName, String userPassword) throws Exception{
-        ConnectionManager cm = ConnectionManager.getCM("academicsystem");
+    public static Person handleAuth(String userName, String userPassword, String databaseName) throws Exception{
+        ConnectionManager cm = ConnectionManager.getCM(databaseName);
         
         ResultSet rs = cm.executeQuery("SELECT * FROM users WHERE username = '" + userName + "' AND password = '" + userPassword + "'");
 
@@ -47,7 +47,10 @@ public class App {
             
             person = null;
             try{
-                person = handleAuth(userName, userPassword);
+                if(args[0].equals("test"))
+                    person = handleAuth(userName, userPassword,"academicsystemtest");
+                else
+                    person = handleAuth(userName, userPassword,"academicsystem");
             }
             catch(Exception e){
                 System.out.println("Error: " + e);
@@ -58,6 +61,7 @@ public class App {
                 System.out.println("Press -1 to exit or any other integer to continue");
                 int choice = sc.nextInt();
                 if(choice == -1){
+                    System.out.println("Exiting...");
                     break;
                 }
             }

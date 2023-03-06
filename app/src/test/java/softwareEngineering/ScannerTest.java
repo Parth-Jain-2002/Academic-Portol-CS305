@@ -1,6 +1,6 @@
 package softwareEngineering;
-import org.junit.*;
 import java.io.*;
+import org.junit.*;
 import static org.junit.Assert.*;
 
 public class ScannerTest {

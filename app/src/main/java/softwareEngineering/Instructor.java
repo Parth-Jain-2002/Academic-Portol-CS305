@@ -1,6 +1,7 @@
 package softwareEngineering;
 import java.io.*;
 import java.sql.*;
+import java.util.Arrays;
 
 // TODO: Giving the option to add a course offering and decide the program elective or not
 
@@ -8,6 +9,7 @@ public class Instructor extends Person{
     Scanner sc;
     Connection con;
     ConnectionManager cm;
+    String filePath;
 
     public Instructor(String userName){
         this.username = userName;
@@ -16,6 +18,7 @@ public class Instructor extends Person{
         sc = new Scanner();
         cm = ConnectionManager.getCM("academicsystem");
         con = cm.getConnection();
+        filePath = "C:\\Users\\Public\\Documents\\update_grades.csv";
     }
 
     private void displayOptions(){
@@ -25,7 +28,8 @@ public class Instructor extends Person{
         options += "4. View all previous courses offering \n";
         options += "5. View all current courses offering \n";
         options += "6. Update grades of all student \n";
-        options += "7. Exit \n";
+        options += "7. Update Profile \n";
+        options += "8. Exit \n";
         System.out.println(options);
     }    
 
@@ -37,19 +41,15 @@ public class Instructor extends Person{
         String query = "SELECT value FROM CurrentInfo WHERE field = 'current_event_id';";
         String event = "";
         ResultSet rs = cm.executeQuery(query);
-        if(rs.next()){
-            event = rs.getString("value");
-        }
-        else{
-            return "Error: Event not found";
-        }
+        rs.next();
+        event = rs.getString("value");
         return event;
     }
 
    public void manager(){
         try{
             int choice = 0;
-            while(choice != 7){
+            while(choice != 8){
                 displayOptions();
                 System.out.println("Enter your choice: ");
                 choice = sc.nextInt();
@@ -73,6 +73,9 @@ public class Instructor extends Person{
                         updateGrades();
                         break;
                     case 7:
+                        updateProfile();
+                        break;
+                    case 8:
                         System.out.println("Thank you for using the system. Have a nice day!\n");
                         break;
                     default:
@@ -111,10 +114,7 @@ public class Instructor extends Person{
 
         // Step 1: Check if the course offering is open
         String event = getEventInfo();
-        if(event.equals("Error: Event not found")){
-            return;
-        }
-        else if(!event.equals("2")){
+        if(!event.equals("2")){
             System.out.println("Course offering is not open");
             return;
         }
@@ -172,6 +172,9 @@ public class Instructor extends Person{
         if(choice.equals("y")){
             System.out.println("Enter batch ids: ");
             String batchIds = sc.nextLine();
+            System.out.println("Enter the type of elective: ");
+            String type = sc.nextLine();
+
             String[] batchIdsArray = batchIds.split(" ");
             for(int i = 0; i < batchIdsArray.length; i++){
                 // Check if batch exists in table Batch(id, semester, year, department)
@@ -190,7 +193,7 @@ public class Instructor extends Person{
                     return;
                 }
 
-                query = "INSERT INTO ProgramElective(course_id, batch_id, semester, year) VALUES('" + courseId + "', '" + batchIdsArray[i] + "', '" + currentSem + "', '" + currentYear + "')";
+                query = "INSERT INTO ProgramElective(course_id, batch_id, semester, year,type) VALUES('" + courseId + "', '" + batchIdsArray[i] + "', '" + currentSem + "', '" + currentYear + "','" + type +"')";
                 cm.executeUpdate(query);
             }
         }
@@ -212,10 +215,7 @@ public class Instructor extends Person{
 
         // Step 1: Check if the course offering is open
         String event = getEventInfo();
-        if(event.equals("Error: Event not found")){
-            return;
-        }
-        else if(!event.equals("2")){
+        if(!event.equals("2")){
             System.out.println("Course offering is not open");
             return;
         }
@@ -280,11 +280,11 @@ public class Instructor extends Person{
 
         // Step 3: Check if the course is offered by the instructor in CourseOffering(course_id, year, semester, instructor,cgpa) table
         String query = "SELECT * FROM courseoffering WHERE course_id = '" + courseId + "' AND instructor = '" + username + "'";
-            ResultSet rs = cm.executeQuery(query);
-            if(!rs.next()){
-                System.out.println("Course is not offered by you");
-                return;
-            }
+        ResultSet rs = cm.executeQuery(query);
+        if(!rs.next()){
+            System.out.println("Course is not offered by you");
+            return;
+        }
         
         // Step 4: Take user input and apply filters(year, semester, entry_no) if any
         query = "SELECT * FROM completedcourse WHERE course_id = '" + courseId + "'";
@@ -414,10 +414,7 @@ public class Instructor extends Person{
 
         // Step 1: Check if the grade submission is open
             String event = getEventInfo();
-            if(event.equals("Error: Event not found")){
-                return;
-            }
-            else if(!event.equals("5")){
+            if(!event.equals("5")){
                 System.out.println("Grade Submission is not open");
                 return;
             }
@@ -469,14 +466,12 @@ public class Instructor extends Person{
                 // Step 1: Read the csv file
                 String line = "";
                 String cvsSplitBy = ",";
-                String filePath = "C:\\Users\\Public\\Documents\\update_grades.csv";
                 try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
                     // Skip the first line
                     br.readLine();
                     while ((line = br.readLine()) != null) {
                         // use comma as separator
                         String[] data = line.split(cvsSplitBy);
-                        System.out.println(data.length);
                         if(!(data.length==5 || data.length==4)){
                             System.out.println("Grades not updated. Data in csv file is not correct");
                             continue;
@@ -493,23 +488,40 @@ public class Instructor extends Person{
                         }
 
                         grade = grade.toUpperCase();
-                        if(grade.length()>2) grade = grade.substring(0,2);
+                        if(grade.charAt(0)=='"' && grade.charAt(grade.length()-1)=='"'){
+                            grade = grade.substring(1, grade.length()-1);
+                        }
+                        if(entryNo.charAt(0)=='"' && entryNo.charAt(entryNo.length()-1)=='"'){
+                            entryNo = entryNo.substring(1, entryNo.length()-1);
+                        }
+                        if(course_id.charAt(0)=='"' && course_id.charAt(course_id.length()-1)=='"'){
+                            course_id = course_id.substring(1, course_id.length()-1);
+                        }
+                        if(year.charAt(0)=='"' && year.charAt(year.length()-1)=='"'){
+                            year = year.substring(1, year.length()-1);
+                        }
+                        if(semester.charAt(0)=='"' && semester.charAt(semester.length()-1)=='"'){
+                            semester = semester.substring(1, semester.length()-1);
+                        }
+
 
                         // If grade is empty, skip the entry
-                        if(grade.equals("")){
+                        if(grade.equals("\"\"") || grade.equals("")){
                             System.out.println("Grades not provided for entry no: " + entryNo);
                             continue;
                         }
 
-                        // Grade can be A, A-, B+, B, B-, C+, C, C-, D+, D, D-, E, F
-                        if(!grade.equals("A") && !grade.equals("A-") && !grade.equals("B+") && !grade.equals("B") && !grade.equals("B-") && !grade.equals("C+") && !grade.equals("C") && !grade.equals("C-") && !grade.equals("D+") && !grade.equals("D") && !grade.equals("D-") && !grade.equals("E") && !grade.equals("F")){
-                            System.out.println("Grades not updated for entry no: " + entryNo + " Grade is not correct");
+                        // 
+                        String grades[] = {"A", "A-", "B", "B-", "C", "C-", "D", "D-", "E", "F"};
+                        if(!Arrays.asList(grades).contains(grade)){
+                            System.out.println(grade);
+                            System.out.println("Grades not updated for entry no: " + entryNo + ". Grade is not correct");
                             continue;
                         }
                         
                         // Check if the courseId and course_id are same
                         if(!courseId.equals(course_id)){
-                            System.out.println("Grades not updated for entry no: " + entryNo + " Course id is not correct");
+                            System.out.println("Grades not updated for entry no: " + entryNo + ". Course id is not correct");
                             continue;
                         }
 
@@ -517,7 +529,7 @@ public class Instructor extends Person{
                         query = "SELECT * FROM enrolledcourse WHERE entry_no = '" + entryNo + "' AND course_id = '" + course_id + "' AND year = '" + year + "' AND semester = '" + semester + "'";
                         rs = cm.executeQuery(query);
                         if(!rs.next()){
-                            System.out.println("Grades not updated for entry no: " + entryNo + " Entry not found in enrolledcourse table");
+                            System.out.println("Grades not updated for entry no: " + entryNo + ". Entry not found in enrolledcourse table");
                             continue;
                         }
                         
@@ -533,6 +545,32 @@ public class Instructor extends Person{
             else{
                 System.out.println("Grades not updated");
             }
+    }
+
+    private void updateProfile(){
+        // 1. Options to update email or phone in Student(entry_no, name, email, phone, batch)
+        // 2. Update the details in the database
+
+        System.out.println("Do you want to update your email or phone (enter email or phone):");
+        String choice = sc.nextLine();
+
+        if(choice.equals("email")){
+            System.out.println("Enter your new email:");
+            String newEmail = sc.nextLine();
+            String query = "UPDATE student SET email = '" + newEmail + "' WHERE entry_no = '" + this.username + "'";
+            cm.executeUpdate(query);
+            System.out.println("Email updated successfully");
+        }
+        else if(choice.equals("phone")){
+            System.out.println("Enter your new phone number:");
+            String newPhone = sc.nextLine();
+            String query = "UPDATE student SET phone = '" + newPhone + "' WHERE entry_no = '" + this.username + "'";
+            cm.executeUpdate(query);
+            System.out.println("Phone number updated successfully");
+        }
+        else{
+            System.out.println("Invalid choice");
+        }
     }
 
 }

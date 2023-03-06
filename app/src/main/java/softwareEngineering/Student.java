@@ -1,7 +1,6 @@
 package softwareEngineering;
 import java.sql.*;
 
-// TODO: How to integrate program core and program elective courses? - No use on student side
 // TODO: Apply filters in CompletedCourse for grades viewing
 
 public class Student extends Person{
@@ -21,7 +20,7 @@ public class Student extends Person{
     public void manager(){
         try{
             int choice = 0;
-            while(choice != 7){
+            while(choice != 8){
                 displayOptions();
                 System.out.println("Enter your choice: ");
                 choice = sc.nextInt();
@@ -45,6 +44,9 @@ public class Student extends Person{
                         computeCGPA(true);
                         break;
                     case 7:
+                        updateProfile();
+                        break;
+                    case 8:
                         System.out.println("Thank you for using the system. Have a nice day!\n");
                         break;
                     default:
@@ -68,7 +70,8 @@ public class Student extends Person{
         options += "4. View enrolled courses \n";
         options += "5. View completed courses \n";
         options += "6. Compute current CGPA \n";
-        options += "7. Exit \n";
+        options += "7. Update Profile \n";
+        options += "8. Exit \n";
 
         System.out.println(options);
     }
@@ -81,12 +84,8 @@ public class Student extends Person{
         String query = "SELECT value FROM CurrentInfo WHERE field = 'current_event_id';";
         String event = "";
         ResultSet rs = cm.executeQuery(query);
-        if(rs.next()){
-            event = rs.getString("value");
-        }
-        else{
-            return "Error: Event not found";
-        }
+        rs.next();
+        event = rs.getString("value");
         return event;
     }
 
@@ -97,11 +96,8 @@ public class Student extends Person{
         ResultSet rs = cm.executeQuery(query);
         if(rs.next()){
             batch = rs.getString("batch");
-            return batch;
         }
-        else{
-            return "Error: Batch not found";
-        }
+        return batch;
     }
 
     private String getSemesterInfo() throws Exception{
@@ -110,9 +106,6 @@ public class Student extends Person{
         // 3. Return the semester
 
         String batch = getBatchInfo();
-        if(batch.equals("Error: Batch not found")){
-            return "Error: Batch not found";
-        }
         
         // Step 2: Get the semester from Batch(id, semester, year, department) table
         String query = "SELECT semester FROM Batch WHERE id = '" + batch + "';";
@@ -120,11 +113,7 @@ public class Student extends Person{
         ResultSet rs = cm.executeQuery(query);
         if(rs.next()){
             // Convert the semester to an String
-            
             semester = String.valueOf(rs.getInt("semester"));
-        }
-        else{
-            return "Error: Semester not found";
         }
 
         // Step 3: Return the semester
@@ -204,12 +193,7 @@ public class Student extends Person{
 
         // Step 1: Check if course registration is open
         String event = getEventInfo();
-        if(event.equals("Error: Event not found")){
-            System.out.println("Error: Event not found");
-            return;
-        }
-        else if(!event.equals("3")){
-            System.out.println(event);
+        if(!event.equals("3")){
             System.out.println("Course registeration/deregisteration is not open");
             return;
         }
@@ -349,11 +333,7 @@ public class Student extends Person{
 
         // Step 1: Check if the course registration is open
         String event = getEventInfo();
-        if(event.equals("Error: Event not found")){
-            System.out.println("Error: Event not found");
-            return;
-        }
-        else if(!event.equals("3")){
+        if(!event.equals("3")){
             System.out.println("Course registeration/deregisteration is not open");
             return;
         }
@@ -533,7 +513,7 @@ public class Student extends Person{
         }
     }
 
-    private String viewCompletedCourses() throws Exception{
+    private void viewCompletedCourses() throws Exception{
         // 1. Get the courses from CompletedCourse(entry_no, course_id, year, semester, grade) table
         // 2. Print the courses
 
@@ -542,7 +522,7 @@ public class Student extends Person{
         ResultSet rs = cm.executeQuery(query);
         if(!rs.next()){
             System.out.println("You have not completed any courses");
-            return "You have not completed any courses";
+            return;
         }
         else{
             System.out.println("You have completed the following courses:");
@@ -563,7 +543,7 @@ public class Student extends Person{
                 // Print all the details wiht proper formatting and uniform spacing
                 System.out.format("%-15s\t%-45s\t%-15s\t%-15s\t%-15s\n", course_id, course_name, year, semester, grade);
             }while(rs.next());
-            return "Completed courses printed";
+            return;
         }
     }
 
@@ -574,7 +554,7 @@ public class Student extends Person{
         String query = "SELECT * FROM completedcourse WHERE entry_no = '" + this.username + "'";
         ResultSet rs = cm.executeQuery(query);
         if(!rs.next()){
-            System.out.println("You have not completed any courses");
+            System.out.println("You have not completed any courses. Hence the CGPA is 0.0");
             return 0;
         }
         else{
@@ -619,10 +599,6 @@ public class Student extends Person{
                 else if(grade.equals("F")){
                     gradePoints = 0;
                 }
-                else{
-                    if(print) System.out.println("Error: Invalid grade");
-                    return 0;
-                }
 
                 totalCredits += credits;
                 totalGradePoints += (credits * gradePoints);
@@ -631,6 +607,32 @@ public class Student extends Person{
             double cgpa = (double)totalGradePoints / (double)totalCredits;
             if(print) System.out.println("Your CGPA is: " + cgpa);
             return cgpa;
+        }
+    }
+
+    private void updateProfile(){
+        // 1. Options to update email or phone in Student(entry_no, name, email, phone, batch)
+        // 2. Update the details in the database
+
+        System.out.println("Do you want to update your email or phone (enter email or phone):");
+        String choice = sc.nextLine();
+
+        if(choice.equals("email")){
+            System.out.println("Enter your new email:");
+            String newEmail = sc.nextLine();
+            String query = "UPDATE student SET email = '" + newEmail + "' WHERE entry_no = '" + this.username + "'";
+            cm.executeUpdate(query);
+            System.out.println("Email updated successfully");
+        }
+        else if(choice.equals("phone")){
+            System.out.println("Enter your new phone number:");
+            String newPhone = sc.nextLine();
+            String query = "UPDATE student SET phone = '" + newPhone + "' WHERE entry_no = '" + this.username + "'";
+            cm.executeUpdate(query);
+            System.out.println("Phone number updated successfully");
+        }
+        else{
+            System.out.println("Invalid choice");
         }
     }
 }

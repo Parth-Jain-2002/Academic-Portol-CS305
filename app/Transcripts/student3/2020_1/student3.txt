@@ -1,0 +1,20 @@
+-------------------------------------------- INDIAN INSTITUTE OF TECHNOLOGY, ROPAR --------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------
+
+
+ENTRY NUMBER: student3
+Transcript for student3 for 2020_1 semester is: 
+
+-------------------------------------------------------------------------------------------------------------------------------
+Course ID 	Course Name                                                                	Credits   	Grade     
+-------------------------------------------------------------------------------------------------------------------------------
+MA101     	Calculus                                                                   	3         	A         
+HS103     	Professional English Communication                                         	3         	A-        
+HS102     	English Language Skills                                                    	3         	B         
+NC101     	NCC I                                                                      	1         	B-        
+PH101     	Physics for Engineers                                                      	3         	C         
+PH102     	Physics for Engineers Lab                                                  	2         	C-        
+CY101     	Chemistry for Engineers                                                    	4         	D         
+GE104     	Introduction to Electrical Engineering                                     	3         	E         
+GE103     	Introduction to Computer Programming & Data Structure                      	4         	F         

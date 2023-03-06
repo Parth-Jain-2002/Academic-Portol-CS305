@@ -1,0 +1,59 @@
+Name: Parth Jain
+Entry Number: 2020CSB1106
+
+Software Engineering - CS305
+Mini Project
+
+In this assignment, we were required to design and implement a multi-user database application for managing the academics of an academic institute.
+The application was to be implemented in Java and the database was to be implemented in Postgres.
+
+The application consisted of three users:
+1. Student
+2. Faculty
+3. Academics Office
+
+The student can do the following operations:
+1. Register for a course
+2. Deregister for a course
+3. Get course information
+4. View enrolled courses (including grades)
+5. View completed courses (including grades)
+6. Compute CGPA
+
+The faculty can do the following operations:
+1. Add a course offering
+2. Remove a course offering
+3. View grades of all students of a course offering
+4. View all previous courses offering
+5. View all current courses offering
+6. Update grades of all student in a course offering
+
+The academics office can do the following operations:
+1. Add a course
+2. Remove a course
+3. View grades of all students of a course
+4. Generate transcripts of all students
+5. View all courses
+6. Check if a student is eligible for graduation
+7. Change current information like current semester, current year, current event id.
+
+Database Design:
+The various tables in the database are:
+1. Event(id, description, start_date, end_date):
+2. CurrentInfo(field, value)
+3. Users(username, password, role)
+4. Department(code, name)
+5. ProgramType(name)
+6. Course(id, name, l, t, p, s, credits, department)
+7. Batch(id, semester, year, department)
+8. ProgramCore(course_id, batch_id, type)
+9. ProgramElective(course_id, batch_id, semester, year, type)
+10. Student(entry_no, name, email, phone, batch)
+11. Instructor(id, name, email, phone, department)
+12. Academic(id, name, email, phone)
+13. CourseOffering(course_id, year, semester, instructor, cgpa)
+14. CompletedCourse(entry_no, course_id, year, semester, grade)
+15. EnrolledCourse(entry_no, course_id, year, semester)
+16. Prerequisite_group_name(group_id): This table is used to store the name of the group of prerequisites.
+17. Prerequisite_group(group_id, pre_req_id): This table is used to identify the group id with the course id of the prerequisites.
+18. Prerequisite(course_id, group_id): This table is used to store the course id and the group id of the prerequisites.

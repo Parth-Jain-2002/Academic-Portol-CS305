@@ -1,6 +1,7 @@
 package softwareEngineering;
 import java.sql.*;
 import java.io.*;
+import java.util.Map;
 
 // TODO: Graduation check function
 // TODO: Addition of program core and program elective courses
@@ -30,10 +31,10 @@ public class AcademicSection extends Person{
                 choice = sc.nextInt();
                 switch(choice){
                     case 1:
-                        addCourse();
+                        changeCurrentInfo();
                         break;
                     case 2:
-                        dropCourse();
+                        addCourse();
                         break;
                     case 3:
                         viewGrades();
@@ -48,11 +49,11 @@ public class AcademicSection extends Person{
                         graduationCheck();
                         break;
                     case 7:
-                        changeCurrentInfo();
+                        updateProfile();
                         break;
                     case 8:
                         System.out.println("Thank you for using the system. Have a nice day!");
-                        break;
+                        break;           
                     default:
                         System.out.println("Invalid choice");
                 }
@@ -64,13 +65,13 @@ public class AcademicSection extends Person{
     }
 
     private void displayOptions(){
-        String options = "\n\n1. Add a new course to the system\n";
-        options += "2. Drop a course from the system\n";
+        String options = "\n\n1. Change Current Info\n";
+        options += "2. Add a new course to the system\n";
         options += "3. View grades of all students\n";
         options += "4. Generate transcripts for all students\n";
         options += "5. View all courses\n";
-        options += "6. Analyze student performance\n";
-        options += "7. Change Current Info\n";
+        options += "6. Check graduation eligibility\n";
+        options += "7. Update Profile\n";
         options += "8. Exit\n";
 
         System.out.println(options);
@@ -85,13 +86,8 @@ public class AcademicSection extends Person{
         String event = "";
             
         ResultSet rs = cm.executeQuery(query);
-        if(rs.next()){
-            event = rs.getString("value");
-        }
-        else{
-            return "Error: Event not found";
-        }
-
+        rs.next();
+        event = rs.getString("value");
         return event;
     }
 
@@ -103,11 +99,7 @@ public class AcademicSection extends Person{
         // Step 1: Check if course catalog modification is open
         String event = getEventInfo();
 
-        if(event.equals("Error: Event not found")){
-            System.out.println(event);
-            return;
-        }
-        else if(!event.equals("1")){
+        if(!event.equals("1")){
             System.out.println("Error: Course Catalog Modification is not open");
             return;
         }
@@ -124,6 +116,8 @@ public class AcademicSection extends Person{
         int t = sc.nextInt();
         System.out.println("Practical hours: ");
         int p = sc.nextInt();
+        System.out.println("Total preparation hours: ");
+        int prep = sc.nextInt();
         System.out.println("Credits: ");
         int credits = sc.nextInt();
         System.out.println("Department: ");
@@ -152,59 +146,9 @@ public class AcademicSection extends Person{
         }
 
         // Step 3: Insert into table Course(id, name, l, t, p, credits, department)
-        String query = "INSERT INTO Course(id, name, l, t, p, credits, department) VALUES( '" + id + "', '" + name + "', " + l + ", " + t + ", " + p + ", " + credits + ", '" + department + "');";
+        String query = "INSERT INTO Course(id, name, l, t, p, s, credits, department) VALUES( '" + id + "', '" + name + "', " + l + ", " + t + ", " + p + ", " + prep + ", " + credits + ", '" + department + "');";
         cm.executeUpdate(query);
         System.out.println("Course added successfully");
-    }
-
-    private void dropCourse() throws Exception{
-        
-        // 1. Check if course catalog modification is open
-        // 2. Get course id
-        // 3. Display course details
-        // 4. Delete from table Course(id, name, l, t, p, credits, department)
-
-        // Step 1: Check if course catalog modification is open
-        String event = getEventInfo();
-
-        if(event.equals("Error: Event not found")){
-            System.out.println(event);
-            return;
-        }
-        else if(!event.equals("1")){
-            System.out.println("Error: Course Catalog Modification is not open");
-            return;
-        }
-
-        // Step 2: Get course id
-        System.out.println("Enter course id: ");
-        String id = sc.nextLine();
-
-        // Step 3: Display course details
-        String query = "SELECT * FROM Course WHERE id = '" + id + "';";
-            
-        ResultSet rs = cm.executeQuery(query);
-        if(rs.next()){
-            System.out.println("Course details: ");
-            System.out.println("Course ID: " + rs.getString("id"));
-            System.out.println("Course name: " + rs.getString("name"));
-            System.out.println("Lecture hours: " + rs.getInt("l"));
-            System.out.println("Tutorial hours: " + rs.getInt("t"));
-            System.out.println("Practical hours: " + rs.getInt("p"));
-            System.out.println("Credits: " + rs.getInt("credits"));
-            System.out.println("Department: " + rs.getString("department"));
-        }
-        else{
-            System.out.println("Course not found");
-            return;
-        }
-        
-
-        // Step 4: Delete from table Course(id, name, l, t, p, credits, department)
-        query = "DELETE FROM Course WHERE id = '" + id + "';"; 
-        cm.executeUpdate(query);
-        System.out.println("Course deleted successfully");
-        
     }
 
     private void viewGrades() throws Exception{
@@ -254,6 +198,7 @@ public class AcademicSection extends Person{
 
         // Step 2: Display grades from CompletedCourse(entry_no, course_id, year, semester, grade)    
         ResultSet rs = cm.executeQuery(query);
+        System.out.println(query);
         System.out.println("Grades: ");
         System.out.println("Entry number\tCourse ID\tYear\tSemester\tGrade");
         while(rs.next()){
@@ -295,11 +240,6 @@ public class AcademicSection extends Person{
                 credits = rs2.getInt("credits");
                 courseName = rs2.getString("name");
             }
-            else{
-                System.out.println("Error: Course not found");
-                return;
-            }
-
 
             if(!entry.equals(entry_no) || sem != semester || yr != year){
                 // Create new folder
@@ -331,16 +271,16 @@ public class AcademicSection extends Person{
                 
                 fw.write("Transcript for " + entry_no + " for " + year + "_" + semester + " semester is: \n\n");
                 fw.write("-------------------------------------------------------------------------------------------------------------------------------\n");
-                fw.write(String.format("%-10s\t%-50s\t%-10s\t%-10s\n", "Course ID", "Course Name", "Credits", "Grade"));
+                fw.write(String.format("%-10s\t%-75s\t%-10s\t%-10s\n", "Course ID", "Course Name", "Credits", "Grade"));
                 fw.write("-------------------------------------------------------------------------------------------------------------------------------\n");
-                fw.write(String.format("%-10s\t%-50s\t%-10d\t%-10s\n", course, courseName, credits, grade));
+                fw.write(String.format("%-10s\t%-75s\t%-10d\t%-10s\n", course, courseName, credits, grade));
                 fw.close();
             }
             else{
                 // Write to file
                 FileWriter fw = new FileWriter(file,true);
                 // Write in file with proper formatting and uniform spacing
-                fw.write(String.format("%-10s\t%-50s\t%-10d\t%-10s\n", course, courseName, credits, grade));
+                fw.write(String.format("%-10s\t%-75s\t%-10d\t%-10s\n", course, courseName, credits, grade));
                 fw.close();
             }
 
@@ -418,7 +358,135 @@ public class AcademicSection extends Person{
 
     private void graduationCheck() throws Exception{
         // 1. Take user input for entry number
-        // 2. Check if the student has completed all the program cores for his/her batch
-        // 3. Check if the student has completed minimum elective credits for his/her batch
+        // 2. Check if the entry number exists in student table
+        // 3. Check if the student has completed all the program cores for his/her batch
+        // 4. Check if the student has completed minimum elective credits for his/her batch
+        // 5. Total credits >= 145, CGPA >= 5.0, HS Elective credits >= 6, Science Elective credits >= 6, Open Elective credits >= 6, Program elective credits >= 6
+
+        int totalCredits = 0;
+        int hsElectiveCredits = 0;
+        int scienceElectiveCredits = 0;
+        int openElectiveCredits = 0;
+        int programElectiveCredits = 0;
+        int totalGrade = 0;
+        double cgpa = 0.0;
+        Map <String, Integer> gradeMap = Map.of(
+            "A", 10, "A-", 9, "B-", 8, "B", 7, "C-", 6, "D", 5, "D-", 4, "E", 2, "F", 0
+        );
+
+        // Step 1: Take user input for entry number
+        System.out.println("Enter entry number: ");
+        String entry_no = sc.nextLine();
+
+        // Step 2: Check if the entry number exists in student table Student(entry_no, name, email, phone, batch)
+        String query = "SELECT * FROM Student WHERE entry_no = '" + entry_no + "';";
+        ResultSet rs = cm.executeQuery(query);
+        if(!rs.next()){
+            System.out.println("Error: Entry number does not exist");
+            return;
+        }
+
+        // Step 3: Check if the student has completed all the program cores for his/her batch
+        String batch = rs.getString("batch");
+
+        // Get program cores for the batch ProgramCore(course_id, batch_id, type)
+        query = "SELECT * FROM ProgramCore WHERE batch_id = '" + batch + "';";
+        rs = cm.executeQuery(query);
+
+        // Check if the student has completed all the program cores for his/her batch in CompletedCourse(entry_no, course_id, year, semester, grade)
+        while(rs.next()){
+            String course_id = rs.getString("course_id");
+            query = "SELECT * FROM CompletedCourse WHERE entry_no = '" + entry_no + "' AND course_id = '" + course_id + "';";
+            ResultSet rs2 = cm.executeQuery(query);
+            if(!rs2.next()){
+                System.out.println("Error: Student has not completed all the program cores for his/her batch");
+                return;
+            }
+
+
+            // Get credits from Course(id, name, l, t, p, s, credits, department)
+            query = "SELECT credits FROM Course WHERE id = '" + course_id + "';";
+            rs2 = cm.executeQuery(query);
+            rs2.next();
+            int credits = rs2.getInt("credits");
+            totalCredits += credits;
+            totalGrade += gradeMap.get(rs2.getString("grade"));
+        }
+
+        // Step 4: Check if the student has completed minimum elective credits for his/her batch using CompletedCourse(entry_no, course_id, year, semester, grade)
+        query = "SELECT * FROM CompletedCourse WHERE entry_no = '" + entry_no + "';";
+        rs = cm.executeQuery(query);
+
+        while (rs.next()){
+            // ProgramElective(course_id, batch_id, semester, year, type)
+            String course_id = rs.getString("course_id");
+            String year = Integer.toString(rs.getInt("year"));
+            String semester = Integer.toString(rs.getInt("semester"));
+            String grade = rs.getString("grade");
+
+            // Check if the course is a program elective
+            query = "SELECT * FROM ProgramElective WHERE course_id = '" + course_id + "' AND batch_id = '" + batch + "' AND semester = '" + semester + "' AND year = '" + year + "';";
+            ResultSet rs2 = cm.executeQuery(query);
+            if(rs2.next()){
+                // Get credits from Course(id, name, l, t, p, s, credits, department)
+                query = "SELECT credits FROM Course WHERE id = '" + course_id + "';";
+                rs2 = cm.executeQuery(query);
+                rs2.next();
+                int credits = rs2.getInt("credits");
+                totalCredits += credits;
+                totalGrade += gradeMap.get(grade)*credits;
+
+                String type = rs2.getString("type");
+                if(type.equals("HS")){
+                    hsElectiveCredits += credits;
+                }
+                else if(type.equals("Science")){
+                    scienceElectiveCredits += credits;
+                }
+                else if(type.equals("Open")){
+                    openElectiveCredits += credits;
+                }
+                else if(type.equals("Core")){
+                    programElectiveCredits += credits;
+                }
+            }
+        }
+
+        // Step 5: Total credits >= 145, CGPA >= 5.0, HS Elective credits >= 6, Science Elective credits >= 6, Open Elective credits >= 6, Program elective credits >= 6
+        cgpa = totalGrade/totalCredits;
+        boolean flag = (totalCredits >= 145) && (hsElectiveCredits >= 6) && (scienceElectiveCredits >= 6) && (openElectiveCredits >= 6) && (programElectiveCredits >= 6) && (cgpa >= 5.0);
+        if(flag){
+            System.out.println("Student is eligible for graduation");
+        }
+        else{
+            System.out.println("Student is not eligible for graduation");
+        }
+
+    }
+
+    private void updateProfile(){
+        // 1. Options to update email or phone in Student(entry_no, name, email, phone, batch)
+        // 2. Update the details in the database
+
+        System.out.println("Do you want to update your email or phone (enter email or phone):");
+        String choice = sc.nextLine();
+
+        if(choice.equals("email")){
+            System.out.println("Enter your new email:");
+            String newEmail = sc.nextLine();
+            String query = "UPDATE student SET email = '" + newEmail + "' WHERE entry_no = '" + this.username + "'";
+            cm.executeUpdate(query);
+            System.out.println("Email updated successfully");
+        }
+        else if(choice.equals("phone")){
+            System.out.println("Enter your new phone number:");
+            String newPhone = sc.nextLine();
+            String query = "UPDATE student SET phone = '" + newPhone + "' WHERE entry_no = '" + this.username + "'";
+            cm.executeUpdate(query);
+            System.out.println("Phone number updated successfully");
+        }
+        else{
+            System.out.println("Invalid choice");
+        }
     }
 }

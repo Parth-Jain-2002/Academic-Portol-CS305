@@ -3,11 +3,12 @@
 ---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------
 
 
-ENTRY NUMBER: admin
-Transcript for admin for 2022_3 semester is: 
+ENTRY NUMBER: student1
+Transcript for student1 for 2020_4 semester is: 
 
 -------------------------------------------------------------------------------------------------------------------------------
-Course ID 	Course Name                                       	Credits   	Grade     
+Course ID 	Course Name                                                                	Credits   	Grade     
 -------------------------------------------------------------------------------------------------------------------------------
-CS101     	Introduction to Computer Science                  	4         	A         
-CS102     	Data Structures                                   	4         	A-        
+GE108     	Basic Electronics                                                          	3         	D         
+GE107     	Tinkering Lab                                                              	1         	E         
+GE109     	Introduction to Engineering Products                                       	1         	A         
