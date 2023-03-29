@@ -4,6 +4,14 @@ Entry Number: 2020CSB1106
 Software Engineering - CS305
 Mini Project
 
+How to run and compile the program ?
+1. To setup the database, first change the username and password in the config.properties file present in the src/main/resources folder.
+2. Use the files present in the sql_files folder to create the database and the tables. Use creationReal file to create the database with which the application can be run. Use creationTest file to create the database with which the application can be tested.
+3. To run the application, use the command "gradle --console=plain run" in the terminal.
+4. To test the application, use the command "gradle test" in the terminal.
+5. To generate the jacocoReport, use the command "gradle build" followed by "gradle jacocoTestReport" in the terminal. The report will be generated in the build/reports/jacoco/test/html folder.
+
+
 In this assignment, we were required to design and implement a multi-user database application for managing the academics of an academic institute.
 The application was to be implemented in Java and the database was to be implemented in Postgres.
 
@@ -19,6 +27,7 @@ The student can do the following operations:
 4. View enrolled courses (including grades)
 5. View completed courses (including grades)
 6. Compute CGPA
+7. Update Profile
 
 The faculty can do the following operations:
 1. Add a course offering
@@ -27,6 +36,7 @@ The faculty can do the following operations:
 4. View all previous courses offering
 5. View all current courses offering
 6. Update grades of all student in a course offering
+7. Update Profile
 
 The academics office can do the following operations:
 1. Add a course
@@ -36,6 +46,9 @@ The academics office can do the following operations:
 5. View all courses
 6. Check if a student is eligible for graduation
 7. Change current information like current semester, current year, current event id.
+8. Update profile
+
+-> The activity diagram for the application is present in the UML folder. Through the activity diagram, we can see the various operations that can be performed by the users.
 
 Database Design:
 The various tables in the database are:
@@ -46,14 +59,16 @@ The various tables in the database are:
 5. ProgramType(name)
 6. Course(id, name, l, t, p, s, credits, department)
 7. Batch(id, semester, year, department)
-8. ProgramCore(course_id, batch_id, type)
-9. ProgramElective(course_id, batch_id, semester, year, type)
+8. ProgramCore(course_id, batch_id)
+9. ProgramElective(course_id, batch_id, type)
 10. Student(entry_no, name, email, phone, batch)
 11. Instructor(id, name, email, phone, department)
 12. Academic(id, name, email, phone)
 13. CourseOffering(course_id, year, semester, instructor, cgpa)
 14. CompletedCourse(entry_no, course_id, year, semester, grade)
-15. EnrolledCourse(entry_no, course_id, year, semester)
+15. EnrolledCourse(entry_no, course_id, year, semester, grade)
 16. Prerequisite_group_name(group_id): This table is used to store the name of the group of prerequisites.
 17. Prerequisite_group(group_id, pre_req_id): This table is used to identify the group id with the course id of the prerequisites.
 18. Prerequisite(course_id, group_id): This table is used to store the course id and the group id of the prerequisites.
+
+-> The various dependencies between different tables is shown in the ERD diagram present in UML folder.

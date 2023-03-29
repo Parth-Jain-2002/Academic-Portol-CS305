@@ -701,7 +701,7 @@ public class StudentTest {
         person.manager();
 
         String output = outputStream.toString();
-        String expectedOutput = "Your CGPA is: 6.4";
+        String expectedOutput = "Your CGPA is: 6.275";
         assertTrue(output.contains(expectedOutput));
     }
         

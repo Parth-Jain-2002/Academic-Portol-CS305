@@ -3,8 +3,11 @@
 ---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------
 
 
-ENTRY NUMBER: student2
-Transcript for student2 for 2020_2 semester is: 
+NAME: student3
+ENTRY NUMBER: student3
+BATCH: 2021CSB
+
+Transcript for student3 for year 2020 and semester 2 is: 
 
 -------------------------------------------------------------------------------------------------------------------------------
 Course ID 	Course Name                                                                	Credits   	Grade     
@@ -16,3 +19,14 @@ GE101     	Technology Museum Lab                                                
 MA102     	Linear Algebra, Integral Transforms and Special Functions                  	3         	A-        
 CS101     	Discrete Mathematical Structures                                           	3         	B         
 NC102     	NCC II                                                                     	1         	B-        
+-------------------------------------------------------------------------------------------------------------------------------
+
+SEMESTER GPA: 8.214285714285714
+SEMESTER POINTS: 115
+SEMESTER CREDITS: 14
+CUMULATIVE GPA: 6.275
+CUMULATIVE POINTS: 251
+CUMULATIVE CREDITS: 40
+
+-------------------------------------------------------------------------------------------------------------------------------
+

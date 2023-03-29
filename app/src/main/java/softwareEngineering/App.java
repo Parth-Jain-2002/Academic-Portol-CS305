@@ -14,15 +14,15 @@ public class App {
         if(rs.next()){
             String role = rs.getString("role");
             if(role.equals("student")){
-                System.out.println("Welcome, Student " + userName + "!");
+                System.out.println("\nWelcome, Student " + userName + "!");
                 return new Student(userName);
             }
             else if(role.equals("instructor")){
-                System.out.println("Welcome, Instructor " + userName + "!");
+                System.out.println("\nWelcome, Instructor " + userName + "!");
                 return new Instructor(userName);
             }
             else if(role.equals("academic")){
-                System.out.println("Welcome, Academic Section " + userName + "!");
+                System.out.println("\nWelcome, Academic Section " + userName + "!");
                 return new AcademicSection(userName);
             }
             else{
@@ -36,10 +36,13 @@ public class App {
 
     public static void main(String[] args){
         Scanner sc = new Scanner();
-
         Person person = null;
 
+        System.out.println("Welcome to the Academic Portal!");
+
         while(person == null){
+            System.out.println("Please enter your credentials to login: ");
+            System.out.println();
             System.out.println("Enter your user-name: ");
             String userName = sc.nextLine();
             System.out.println("Enter your password: ");
@@ -47,7 +50,7 @@ public class App {
             
             person = null;
             try{
-                if(args[0].equals("test"))
+                if(args.length>0 && args[0].equals("test"))
                     person = handleAuth(userName, userPassword,"academicsystemtest");
                 else
                     person = handleAuth(userName, userPassword,"academicsystem");
@@ -57,11 +60,11 @@ public class App {
             }
 
             if(person == null){
-                System.out.println("\nInvalid username or password\n");
+                System.out.println("\nInvalid username or password");
                 System.out.println("Press -1 to exit or any other integer to continue");
                 int choice = sc.nextInt();
                 if(choice == -1){
-                    System.out.println("Exiting...");
+                    System.out.println("\nExiting...");
                     break;
                 }
             }

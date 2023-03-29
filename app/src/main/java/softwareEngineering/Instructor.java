@@ -3,8 +3,6 @@ import java.io.*;
 import java.sql.*;
 import java.util.Arrays;
 
-// TODO: Giving the option to add a course offering and decide the program elective or not
-
 public class Instructor extends Person{
     Scanner sc;
     Connection con;
@@ -21,8 +19,11 @@ public class Instructor extends Person{
         filePath = "C:\\Users\\Public\\Documents\\update_grades.csv";
     }
 
+    // This method is used to display the menu options
     private void displayOptions(){
-        String options = "\n\n1. Add a course offering \n";
+        String options = "\n============================================\n";
+        options += "+++++++++++++++++++ MENU +++++++++++++++++++\n\n";
+        options += "1. Add a course offering \n";
         options += "2. Remove a course offering \n";
         options += "3. View grades of all students of a course\n";
         options += "4. View all previous courses offering \n";
@@ -30,6 +31,7 @@ public class Instructor extends Person{
         options += "6. Update grades of all student \n";
         options += "7. Update Profile \n";
         options += "8. Exit \n";
+        options += "\n============================================\n";
         System.out.println(options);
     }    
 
@@ -46,6 +48,7 @@ public class Instructor extends Person{
         return event;
     }
 
+    // This method is the main entry point for the student and redirects to the appropriate method based on the choice
    public void manager(){
         try{
             int choice = 0;
@@ -53,6 +56,7 @@ public class Instructor extends Person{
                 displayOptions();
                 System.out.println("Enter your choice: ");
                 choice = sc.nextInt();
+                // This gives the user the option to choose from the menu and then perform the corresponding action
                 switch(choice){
                     case 1:
                         addCourseOffering();
@@ -119,16 +123,6 @@ public class Instructor extends Person{
             return;
         }
 
-        // Step 2: Get the course id
-        System.out.println("Enter the course id: ");
-        String courseId = sc.nextLine();
-
-        // Step 3: Check if the course exists in Course(id, name, l, t, p, credits, department) table
-        if(courseExist(courseId).equals("NOT EXIST")){
-            return;
-        }
-
-        // Step 4: Check if the course is already offered in CourseOffering(course_id, semester, year, section, instructor_id,cgpa) table in current semester and year
         String currentSem = "";
         String currentYear = "";
 
@@ -144,8 +138,36 @@ public class Instructor extends Person{
             }
         }
 
+        // Display all the courses that the faculty can offer
+        System.out.println("\nCourses that you can offer: ");
+        String query = "SELECT * FROM course WHERE department = (SELECT department FROM instructor WHERE id = '" + username + "')";
+        rs = cm.executeQuery(query);
+        int index = 1;
+        while(rs.next()){
+            String course_id = rs.getString("id");
 
-        String query = "SELECT * FROM courseoffering WHERE course_id = '" + courseId + "' AND semester = '" + currentSem + "' AND year = '" + currentYear + "'";
+            query = "SELECT * FROM courseoffering WHERE course_id = '" + course_id + "' AND semester = '" + currentSem + "' AND year = '" + currentYear + "'";
+            ResultSet rs1 = cm.executeQuery(query);
+            if(rs1.next()){
+                continue;
+            }
+            System.out.println(index+". "+rs.getString("id")+" "+rs.getString("name"));
+            index++;
+        }
+        System.out.println();
+
+
+        // Step 2: Get the course id
+        System.out.println("Enter the course id: ");
+        String courseId = sc.nextLine();
+
+        // Step 3: Check if the course exists in Course(id, name, l, t, p, credits, department) table
+        if(courseExist(courseId).equals("NOT EXIST")){
+            return;
+        }
+
+        // Step 4: Check if the course is already offered in CourseOffering(course_id, semester, year, section, instructor_id,cgpa) table in current semester and year
+        query = "SELECT * FROM courseoffering WHERE course_id = '" + courseId + "' AND semester = '" + currentSem + "' AND year = '" + currentYear + "'";
         rs = cm.executeQuery(query);
         if(rs.next()){
             if(rs.getString("instructor").equals(username)){
@@ -193,7 +215,7 @@ public class Instructor extends Person{
                     return;
                 }
 
-                query = "INSERT INTO ProgramElective(course_id, batch_id, semester, year,type) VALUES('" + courseId + "', '" + batchIdsArray[i] + "', '" + currentSem + "', '" + currentYear + "','" + type +"')";
+                query = "INSERT INTO ProgramElective(course_id, batch_id, type) VALUES('" + courseId + "', '" + batchIdsArray[i] + "', '"  + type +"')";
                 cm.executeUpdate(query);
             }
         }
@@ -266,7 +288,7 @@ public class Instructor extends Person{
         // 1. Get the course id
         // 2. Check if the course exists
         // 3. Check if the course is offered by the instructor
-        // 4. Take user input and apply filters(course_id, year, semester,entry_no) if any
+        // 4. Take user input and apply filters(year, semester,entry_no) if any
         // 5. Display grades from CompletedCourse(entry_no, course_id, year, semester, grade)
 
         // Step 1: Get the course id
@@ -310,14 +332,16 @@ public class Instructor extends Person{
         // Step 5: Display grades from CompletedCourse(entry_no, course_id, year, semester, grade)
             rs = cm.executeQuery(query);
             System.out.println("Grades: ");
-            System.out.println("Entry number\tCourse ID\tYear\tSemester\tGrade");
+            System.out.format("%-15s%-15s%-15s%-15s%-15s", "Entry No", "Course Id", "Year", "Semester", "Grade");
+            System.out.println();
             while(rs.next()){
                 String entry = rs.getString("entry_no");
                 String course = rs.getString("course_id");
                 int yr = rs.getInt("year");
                 int sem = rs.getInt("semester");
                 String grade = rs.getString("grade");
-                System.out.format("%s\t\t%s\t\t%d\t%d\t\t%s\n", entry, course, yr, sem, grade); 
+                System.out.format("%-15s%-15s%-15d%-15d%-15s", entry, course, yr, sem, grade);
+                System.out.println();
             }
     }
 
@@ -547,24 +571,36 @@ public class Instructor extends Person{
             }
     }
 
-    private void updateProfile(){
-        // 1. Options to update email or phone in Student(entry_no, name, email, phone, batch)
-        // 2. Update the details in the database
+    private void updateProfile() throws Exception{
+        // 1. Display the current details
+        // 2. Options to update email or phone in Student(entry_no, name, email, phone, batch)
+        // 3. Update the details in the database
 
-        System.out.println("Do you want to update your email or phone (enter email or phone):");
+        // Step 1: Display the current details
+        System.out.println("Your current details are:");
+        String query = "SELECT * FROM instructor WHERE id = '" + this.username + "'";
+        ResultSet rs = cm.executeQuery(query);
+        rs.next();
+        System.out.println("Name: " + rs.getString("name"));
+        System.out.println("Email: " + rs.getString("email"));
+        System.out.println("Phone: " + rs.getString("phone"));
+        System.out.println("Department: " + rs.getString("department"));
+
+        // Step 2: Options to update email or phone
+        System.out.println("\nDo you want to update your email or phone (enter email or phone):");
         String choice = sc.nextLine();
 
         if(choice.equals("email")){
             System.out.println("Enter your new email:");
             String newEmail = sc.nextLine();
-            String query = "UPDATE student SET email = '" + newEmail + "' WHERE entry_no = '" + this.username + "'";
+            query = "UPDATE instructor SET email = '" + newEmail + "' WHERE id = '" + this.username + "'";
             cm.executeUpdate(query);
             System.out.println("Email updated successfully");
         }
         else if(choice.equals("phone")){
             System.out.println("Enter your new phone number:");
             String newPhone = sc.nextLine();
-            String query = "UPDATE student SET phone = '" + newPhone + "' WHERE entry_no = '" + this.username + "'";
+            query = "UPDATE instructor SET phone = '" + newPhone + "' WHERE id = '" + this.username + "'";
             cm.executeUpdate(query);
             System.out.println("Phone number updated successfully");
         }

@@ -3,8 +3,11 @@
 ---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------
 
 
-ENTRY NUMBER: student1
-Transcript for student1 for 2020_4 semester is: 
+NAME: student4
+ENTRY NUMBER: student4
+BATCH: 2019CSB
+
+Transcript for student4 for year 2021 and semester 4 is: 
 
 -------------------------------------------------------------------------------------------------------------------------------
 Course ID 	Course Name                                                                	Credits   	Grade     
@@ -12,3 +15,18 @@ Course ID 	Course Name                                                          
 GE108     	Basic Electronics                                                          	3         	D         
 GE107     	Tinkering Lab                                                              	1         	E         
 GE109     	Introduction to Engineering Products                                       	1         	A         
+CS202     	Programming Paradigms and Pragmatics                                       	4         	A         
+CS204     	Computer Architecture                                                      	4         	A         
+MA202     	Probability and Statistics                                                 	3         	A         
+NCIV      	NCC                                                                        	1         	A         
+-------------------------------------------------------------------------------------------------------------------------------
+
+SEMESTER GPA: 8.470588235294118
+SEMESTER POINTS: 144
+SEMESTER CREDITS: 17
+CUMULATIVE GPA: 7.693333333333333
+CUMULATIVE POINTS: 577
+CUMULATIVE CREDITS: 75
+
+-------------------------------------------------------------------------------------------------------------------------------
+

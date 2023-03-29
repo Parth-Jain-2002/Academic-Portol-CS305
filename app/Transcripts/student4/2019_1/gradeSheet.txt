@@ -3,8 +3,11 @@
 ---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------
 
 
-ENTRY NUMBER: student3
-Transcript for student3 for 2020_1 semester is: 
+NAME: student4
+ENTRY NUMBER: student4
+BATCH: 2019CSB
+
+Transcript for student4 for year 2019 and semester 1 is: 
 
 -------------------------------------------------------------------------------------------------------------------------------
 Course ID 	Course Name                                                                	Credits   	Grade     
@@ -17,4 +20,14 @@ PH101     	Physics for Engineers                                                
 PH102     	Physics for Engineers Lab                                                  	2         	C-        
 CY101     	Chemistry for Engineers                                                    	4         	D         
 GE104     	Introduction to Electrical Engineering                                     	3         	E         
-GE103     	Introduction to Computer Programming & Data Structure                      	4         	F         
+-------------------------------------------------------------------------------------------------------------------------------
+
+SEMESTER GPA: 6.181818181818182
+SEMESTER POINTS: 136
+SEMESTER CREDITS: 22
+CUMULATIVE GPA: 6.181818181818182
+CUMULATIVE POINTS: 136
+CUMULATIVE CREDITS: 22
+
+-------------------------------------------------------------------------------------------------------------------------------
+

@@ -9,6 +9,7 @@ public class ConnectionManager {
     private String dbName;
     private Connection con = null;
 
+    // Have used the singleton pattern to create a single connection object
     private ConnectionManager(String databaseName) {
         ResourceBundle rd = ResourceBundle.getBundle("config");
         String url = rd.getString("url"); // localhost:5432
@@ -25,6 +26,7 @@ public class ConnectionManager {
         }
     }
 
+    // This method will return the same connection object if the database name is same
     public static ConnectionManager getCM(String databaseName){
         if(builder == null || !builder.dbName.equals(databaseName)){
             builder = new ConnectionManager(databaseName);
@@ -33,6 +35,7 @@ public class ConnectionManager {
         return builder;
     }
 
+    // This method will return the connection object
     public Connection getConnection(){
         return con;
     }

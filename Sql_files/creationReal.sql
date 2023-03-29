@@ -1,22 +1,185 @@
--- CLEANUP TABLES:
-TRUNCATE TABLE Prerequisite;
-TRUNCATE TABLE Prerequisite_group;
-TRUNCATE TABLE Prerequisite_group_name CASCADE;
-TRUNCATE TABLE EnrolledCourse;
-TRUNCATE TABLE CompletedCourse;
-TRUNCATE TABLE CourseOffering;
-TRUNCATE TABLE ProgramElective;
-TRUNCATE TABLE ProgramCore;
-TRUNCATE TABLE Batch CASCADE;
-TRUNCATE TABLE Course CASCADE;
-TRUNCATE TABLE student CASCADE;
-TRUNCATE TABLE instructor CASCADE;
-TRUNCATE TABLE academic;
-TRUNCATE TABLE Department CASCADE;
-TRUNCATE TABLE users CASCADE;
-TRUNCATE TABLE Currentinfo;
-TRUNCATE TABLE Eventinfo;
-TRUNCATE TABLE ProgramType CASCADE;
+-- PSQL Queries
+-- CLEANUP: DROP DATABASE
+\c postgres;
+DROP DATABASE IF EXISTS academicsystem;
+
+-- CREATE DATABASE: academicsystem
+CREATE DATABASE academicsystem;
+\c academicsystem;
+
+-- start_date and end_date = redundant but can be used for future
+-- TABLE: EVENT(id, description, start_date, end_date)
+CREATE TABLE IF NOT EXISTS EventInfo(
+    id VARCHAR(50) PRIMARY KEY,
+    description VARCHAR(150) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL
+    );
+
+-- TABLE: CurrentInfo(field, value)
+CREATE TABLE IF NOT EXISTS CurrentInfo(
+    field VARCHAR(50) PRIMARY KEY,
+    value VARCHAR(50) NOT NULL
+    );
+
+-- TABLE: Users(username, password, role)
+CREATE TABLE IF NOT EXISTS users(
+    username VARCHAR(50) PRIMARY KEY,
+    password VARCHAR(50) NOT NULL,
+    role VARCHAR(50) NOT NULL
+    );
+
+
+-- TABLE: Department(code, name)
+CREATE TABLE IF NOT EXISTS Department(
+    code VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+    );
+
+-- TABLE: ProgramType(name)
+CREATE TABLE IF NOT EXISTS ProgramType(
+    name VARCHAR(50) PRIMARY KEY
+    );
+
+-- L= No. of lecture ‘hours’(actually 50 min.) per week
+-- T= No. of tutorial ‘hours’= L/3, by default.
+-- P= No. of laboratory ‘hours’.
+-- S = Total preparation ‘hours’by students including assignments and self-study.
+-- C = Total credit-terms.
+-- TABLE: Course(id, name, l, t, p, s, credits, department)
+CREATE TABLE IF NOT EXISTS Course(
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    l INT NOT NULL,
+    t INT NOT NULL,
+    p INT NOT NULL,
+    s INT NOT NULL,
+    credits FLOAT NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    FOREIGN KEY (department) REFERENCES department(code)
+    );
+
+-- TABLE: Batch(id, semester, year, department)
+CREATE TABLE IF NOT EXISTS Batch(
+    id VARCHAR(50) PRIMARY KEY,
+    semester INT NOT NULL,
+    year INT NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    FOREIGN KEY (department) REFERENCES Department(code)
+    );
+
+-- TABLE: ProgramCore(course_id, batch_id, type)
+CREATE TABLE IF NOT EXISTS ProgramCore(
+    course_id VARCHAR(50) NOT NULL,
+    batch_id VARCHAR(50) NOT NULL,
+    PRIMARY KEY (course_id, batch_id),
+    FOREIGN KEY (course_id) REFERENCES Course(id),
+    FOREIGN KEY (batch_id) REFERENCES Batch(id)
+    );
+
+-- TABLE: ProgramElective(course_id, batch_id, type)
+CREATE TABLE IF NOT EXISTS ProgramElective(
+    course_id VARCHAR(50) NOT NULL,
+    batch_id VARCHAR(50) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    PRIMARY KEY (course_id, batch_id),
+    FOREIGN KEY (course_id) REFERENCES Course(id),
+    FOREIGN KEY (batch_id) REFERENCES Batch(id),
+    FOREIGN KEY (type) REFERENCES ProgramType(name)
+    );
+
+-- TABLE: Student(entry_no, name, email, phone, batch)
+CREATE TABLE IF NOT EXISTS Student(
+    entry_no VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(50) NOT NULL,
+    phone VARCHAR(50) NOT NULL,
+    batch VARCHAR(50) NOT NULL,
+    FOREIGN KEY (batch) REFERENCES Batch(id),
+    FOREIGN KEY (entry_no) REFERENCES users(username)
+    );
+
+-- TABLE: Instructor(id, name, email, phone, department)
+CREATE TABLE IF NOT EXISTS Instructor(
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(50) NOT NULL,
+    phone VARCHAR(10) NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    FOREIGN KEY (department) REFERENCES Department(code),
+    FOREIGN KEY (id) REFERENCES users(username)
+    );
+
+-- TABLE: Academic(id, name, email, phone)
+CREATE TABLE IF NOT EXISTS Academic(
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(50) NOT NULL,
+    phone VARCHAR(10) NOT NULL,
+    FOREIGN KEY (id) REFERENCES users(username)
+    );
+
+-- Can add time slot as well
+-- TABLE: CourseOffering(course_id, year, semester, instructor, cgpa)
+CREATE TABLE IF NOT EXISTS CourseOffering(
+    course_id VARCHAR(50) NOT NULL,
+    year INT NOT NULL,
+    semester VARCHAR(50) NOT NULL,
+    instructor VARCHAR(50) NOT NULL,
+    cgpa FLOAT(2) NOT NULL,
+    PRIMARY KEY (course_id, year, semester),
+    FOREIGN KEY (course_id) REFERENCES Course(id),
+    FOREIGN KEY (instructor) REFERENCES Instructor(id)
+    );
+
+-- TABLE: CompletedCourse(entry_no, course_id, year, semester, grade)
+CREATE TABLE IF NOT EXISTS CompletedCourse(
+    entry_no VARCHAR(50) NOT NULL,
+    course_id VARCHAR(50) NOT NULL,
+    year INT NOT NULL,
+    semester INT NOT NULL,
+    grade VARCHAR(2) NOT NULL,
+    PRIMARY KEY (entry_no, course_id, year, semester),
+    FOREIGN KEY (entry_no) REFERENCES Student(entry_no),
+    FOREIGN KEY (course_id) REFERENCES Course(id)
+    );
+
+-- TABLE: EnrolledCourse(entry_no, course_id, year, semester)
+CREATE TABLE IF NOT EXISTS EnrolledCourse(
+    entry_no VARCHAR(50) NOT NULL,
+    course_id VARCHAR(50) NOT NULL,
+    year INT NOT NULL,
+    semester INT NOT NULL,
+    grade VARCHAR(2),
+    PRIMARY KEY (entry_no, course_id, year, semester),
+    FOREIGN KEY (entry_no) REFERENCES Student(entry_no),
+    FOREIGN KEY (course_id) REFERENCES Course(id)
+    );
+
+-- Pre-requisites can "and" and "or" conditions as well
+-- TABLE: Prerequisite_group_name(group_id)
+CREATE TABLE IF NOT EXISTS Prerequisite_group_name(
+    group_id VARCHAR(50) PRIMARY KEY
+    );
+
+
+-- TABLE: Prerequisite_group(group_id, pre_req_id)
+CREATE TABLE IF NOT EXISTS Prerequisite_group(
+    group_id VARCHAR(50) NOT NULL,
+    pre_req_id VARCHAR(50) NOT NULL,
+    PRIMARY KEY (group_id, pre_req_id),
+    FOREIGN KEY (pre_req_id) REFERENCES Course(id),
+    FOREIGN KEY (group_id) REFERENCES Prerequisite_group_name(group_id)
+    );
+
+-- TABLE: Prerequisite(course_id, group_id)
+CREATE TABLE IF NOT EXISTS Prerequisite(
+    course_id VARCHAR(50) NOT NULL,
+    group_id VARCHAR(50) NOT NULL,
+    PRIMARY KEY (course_id, group_id),
+    FOREIGN KEY (course_id) REFERENCES Course(id),
+    FOREIGN KEY (group_id) REFERENCES Prerequisite_group_name(group_id)
+    );
 
 -- DUMMY DATA:
 -- EVENT INFO TABLE:
@@ -25,7 +188,7 @@ INSERT INTO Eventinfo VALUES('2','Course Offering','2020-07-25','2020-07-31');
 INSERT INTO Eventinfo VALUES('3','Semester Start and Course Registeration','2020-08-01','2020-08-10');
 INSERT INTO Eventinfo VALUES('4','Semester Running','2020-08-11','2020-11-30');
 INSERT INTO Eventinfo VALUES('5','Semester End and Grade Submission','2020-12-01','2020-12-10');
-INSERT INTO Eventinfo VALUES('6','Grade Finalisation','2020-12-10','2020-12-12');   
+INSERT INTO Eventinfo VALUES('6','Grade Finalisation','2020-12-10','2020-12-12');
 
 -- CURRENT INFO TABLE:
 INSERT INTO Currentinfo VALUES('current_event_id', '1');
@@ -102,7 +265,7 @@ INSERT INTO academic VALUES ('academic3', 'academic3', 'academic3', '9999999999'
 -- T= No. of tutorial ‘hours’= L/3, by default.
 -- P= No. of laboratory ‘hours’.
 -- S = Total preparation ‘hours’by students including assignments and self-study.
--- C = Total credit-terms. 
+-- C = Total credit-terms.
 -- COURSE TABLE (id, name, l, t, p, s, credits, department)
 -- First semester:
 Insert into Course values('MA101','Calculus',3,1,0,5,3,'MA');
@@ -131,7 +294,7 @@ Insert into Course values('GE110','Introduction to Metallurgical and Materials E
 Insert into Course values('NC102','NCC II',0,0,2,11,1,'MA');
 Insert into Course values('NS102','NSS II',0,0,2,11,1,'MA');
 Insert into Course values('NO102','NSO II',0,0,2,11,1,'MA');
--- Third Semester: 
+-- Third Semester:
 INSERT INTO Course VALUES ('CS201', 'Data Structures', 3, 1, 2, 6, 4, 'CS');
 INSERT INTO Course VALUES ('CS203', 'Digital Logic Design', 3, 1, 2, 6, 4, 'CS');
 INSERT INTO Course VALUES ('MA201', 'Differential Equations', 3, 1, 0, 5, 3, 'MA');
@@ -328,7 +491,7 @@ INSERT INTO CompletedCourse VALUES ('student4', 'CS616', 2022, 7, 'A');
 INSERT INTO CompletedCourse VALUES ('student4', 'HS647', 2022, 7, 'A');
 INSERT INTO CompletedCourse VALUES ('student4', 'CS539', 2022, 7, 'A');
 INSERT INTO CompletedCourse VALUES ('student4', 'CP303', 2023, 8, 'A');
-INSERT INTO CompletedCourse VALUES ('student4', 'MA513', 2023, 8, 'A'); 
+INSERT INTO CompletedCourse VALUES ('student4', 'MA513', 2023, 8, 'A');
 INSERT INTO CompletedCourse VALUES ('student4', 'CS503', 2023, 8, 'A');
 INSERT INTO CompletedCourse VALUES ('student4', 'HS621', 2023, 8, 'A');
 INSERT INTO CompletedCourse VALUES ('student4', 'CS533', 2023, 8, 'A');

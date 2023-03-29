@@ -1,0 +1,33 @@
+-------------------------------------------- INDIAN INSTITUTE OF TECHNOLOGY, ROPAR --------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------
+
+
+NAME: student4
+ENTRY NUMBER: student4
+BATCH: 2019CSB
+
+Transcript for student4 for year 2021 and semester 5 is: 
+
+-------------------------------------------------------------------------------------------------------------------------------
+Course ID 	Course Name                                                                	Credits   	Grade     
+-------------------------------------------------------------------------------------------------------------------------------
+CS301     	Introduction to Databases Systems                                          	4         	A         
+CS302     	Analysis and Design of Algorithms                                          	3         	A         
+CS303     	Operating Systems                                                          	4         	A         
+HS301     	Industrial Management                                                      	3         	A         
+GE111     	Introduction to Environmental Science & Engineering                        	3         	A         
+HS104     	Professional Ethics                                                        	1         	A         
+HS202     	Human Geography and Societal Needs                                         	3         	A         
+BM101     	Biology for Engineers                                                      	3         	A         
+-------------------------------------------------------------------------------------------------------------------------------
+
+SEMESTER GPA: 10.0
+SEMESTER POINTS: 240
+SEMESTER CREDITS: 24
+CUMULATIVE GPA: 8.252525252525253
+CUMULATIVE POINTS: 817
+CUMULATIVE CREDITS: 99
+
+-------------------------------------------------------------------------------------------------------------------------------
+

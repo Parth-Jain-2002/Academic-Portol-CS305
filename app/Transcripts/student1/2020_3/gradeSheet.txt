@@ -3,8 +3,11 @@
 ---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------
 
 
+NAME: student1
 ENTRY NUMBER: student1
-Transcript for student1 for 2020_3 semester is: 
+BATCH: 2020CSB
+
+Transcript for student1 for year 2020 and semester 3 is: 
 
 -------------------------------------------------------------------------------------------------------------------------------
 Course ID 	Course Name                                                                	Credits   	Grade     
@@ -15,3 +18,14 @@ MA201     	Differential Equations                                               
 EE201     	Signals and Systems                                                        	3         	B-        
 NCIII     	NCC                                                                        	1         	C         
 HS201     	Economics                                                                  	3         	C-        
+-------------------------------------------------------------------------------------------------------------------------------
+
+SEMESTER GPA: 7.888888888888889
+SEMESTER POINTS: 142
+SEMESTER CREDITS: 18
+CUMULATIVE GPA: 7.4655172413793105
+CUMULATIVE POINTS: 433
+CUMULATIVE CREDITS: 58
+
+-------------------------------------------------------------------------------------------------------------------------------
+

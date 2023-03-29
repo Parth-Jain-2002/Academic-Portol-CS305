@@ -132,6 +132,53 @@ public class AcademicTest {
         assertTrue(output.contains(expectedOutput));
     }
 
+    @Test public void addDropCourseTest3(){
+        String query = "UPDATE currentinfo set value=1 where field='current_event_id'";
+        try{
+            cm.executeUpdate(query);
+        }
+        catch(Exception e){
+            System.out.println("Error: " + e);
+            return;
+        }
+
+
+        AcademicSection person = null;
+        try{
+            person = new AcademicSection("admin2");
+        }
+        catch(Exception e){
+            System.out.println("Exception");
+            return;
+        }
+
+        String input = "2\nCS601\nAdvanced Research\n4\n1\n0\n3\n4\nCS\nn\n8\n";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        System.setIn(inputStream);
+        person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "Course added successfully";
+        assertTrue(output.contains(expectedOutput));
+
+        query = "DELETE FROM course WHERE course_id='CS601'";
+        try{
+            cm.executeUpdate(query);
+        }
+        catch(Exception e){
+            System.out.println("Error: " + e);
+            return;
+        }
+    }
+
     // Test all possible combinations of input for viewGradesTest in different functions
     @Test public void viewGradesTest1(){
         AcademicSection person = null;
@@ -420,7 +467,7 @@ public class AcademicTest {
         assertTrue(output.contains(expectedOutput));
     }
 
-    @Test public void graduationCheckTest(){
+    @Test public void graduationCheckTest1(){
         AcademicSection person = null;
         try{
             person = new AcademicSection("academic1");
@@ -430,7 +477,7 @@ public class AcademicTest {
             return;
         }
         
-        String input = "6\n8\n";
+        String input = "6\nstudent4\n8\n";
         ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
         System.setIn(inputStream);
         person.sc = new Scanner(System.in);
@@ -444,7 +491,91 @@ public class AcademicTest {
         person.manager();
 
         String output = outputStream.toString();
-        String expectedOutput = "Updated successfully";
+        String expectedOutput = "Student is eligible for graduation";
+        assertTrue(output.contains(expectedOutput));
+    }
+
+    @Test public void graduationCheckTest2(){
+        AcademicSection person = null;
+        try{
+            person = new AcademicSection("academic1");
+        }
+        catch(Exception e){
+            System.out.println("Exception");
+            return;
+        }
+
+        String input = "6\nstudent1\n8\n";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        System.setIn(inputStream);
+        person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "Student has not completed all the program cores for his/her batch, hence cannot graduate";
+        assertTrue(output.contains(expectedOutput));
+    }
+
+    @Test public void graduationCheckTest3(){
+        AcademicSection person = null;
+        try{
+            person = new AcademicSection("academic1");
+        }
+        catch(Exception e){
+            System.out.println("Exception");
+            return;
+        }
+
+        String input = "6\nstudent3\n8\n";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        System.setIn(inputStream);
+        person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "Student is not eligible for graduation";
+        assertTrue(output.contains(expectedOutput));
+    }
+
+    @Test public void graduationCheckTest4(){
+        AcademicSection person = null;
+        try{
+            person = new AcademicSection("academic1");
+        }
+        catch(Exception e){
+            System.out.println("Exception");
+            return;
+        }
+
+        String input = "6\nstudent11\n8\n";
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(input.getBytes());
+        System.setIn(inputStream);
+        person.sc = new Scanner(System.in);
+        person.cm = cm;
+        person.con = con;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        System.setOut(printStream);
+
+        person.manager();
+
+        String output = outputStream.toString();
+        String expectedOutput = "Error: Entry number does not exist";
         assertTrue(output.contains(expectedOutput));
     }
 

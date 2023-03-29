@@ -1,0 +1,31 @@
+-------------------------------------------- INDIAN INSTITUTE OF TECHNOLOGY, ROPAR --------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------
+
+
+NAME: student4
+ENTRY NUMBER: student4
+BATCH: 2019CSB
+
+Transcript for student4 for year 2022 and semester 7 is: 
+
+-------------------------------------------------------------------------------------------------------------------------------
+Course ID 	Course Name                                                                	Credits   	Grade     
+-------------------------------------------------------------------------------------------------------------------------------
+II301     	Industrial Internship and Comprehensive Viva Voce                          	3         	A         
+CP302     	Capstone Project I                                                         	3         	A         
+MA516     	MATHEMATICAL IMAGE PROCESSING                                              	3         	A         
+CS616     	ADVANCED COMPUTER VISION                                                   	3         	A         
+HS647     	ISSUES IN INTERNATIONAL FINANCE                                            	3         	A         
+CS539     	Internet of Things                                                         	3         	A         
+-------------------------------------------------------------------------------------------------------------------------------
+
+SEMESTER GPA: 10.0
+SEMESTER POINTS: 180
+SEMESTER CREDITS: 18
+CUMULATIVE GPA: 8.679389312977099
+CUMULATIVE POINTS: 1137
+CUMULATIVE CREDITS: 131
+
+-------------------------------------------------------------------------------------------------------------------------------
+

@@ -3,12 +3,16 @@
 ---------------------------------------------------- SEMESTER GRADE REPORT ----------------------------------------------------
 
 
-ENTRY NUMBER: student3
-Transcript for student3 for 2020_2 semester is: 
+NAME: student1
+ENTRY NUMBER: student1
+BATCH: 2020CSB
+
+Transcript for student1 for year 2020 and semester 2 is: 
 
 -------------------------------------------------------------------------------------------------------------------------------
 Course ID 	Course Name                                                                	Credits   	Grade     
 -------------------------------------------------------------------------------------------------------------------------------
+GE103     	Introduction to Computer Programming & Data Structure                      	4         	A         
 GE102     	Workshop Practice                                                          	2         	A-        
 GE105     	Engineering Drawing                                                        	1         	B         
 HS101     	History of Technology                                                      	3         	B-        
@@ -16,3 +20,14 @@ GE101     	Technology Museum Lab                                                
 MA102     	Linear Algebra, Integral Transforms and Special Functions                  	3         	A-        
 CS101     	Discrete Mathematical Structures                                           	3         	B         
 NC102     	NCC II                                                                     	1         	B-        
+-------------------------------------------------------------------------------------------------------------------------------
+
+SEMESTER GPA: 8.61111111111111
+SEMESTER POINTS: 155
+SEMESTER CREDITS: 18
+CUMULATIVE GPA: 7.275
+CUMULATIVE POINTS: 291
+CUMULATIVE CREDITS: 40
+
+-------------------------------------------------------------------------------------------------------------------------------
+

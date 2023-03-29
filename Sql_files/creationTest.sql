@@ -77,12 +77,10 @@ CREATE TABLE IF NOT EXISTS ProgramCore(
     FOREIGN KEY (batch_id) REFERENCES Batch(id)
 );
 
--- TABLE: ProgramElective(course_id, batch_id, semester, year, type)
+-- TABLE: ProgramElective(course_id, batch_id, type)
 CREATE TABLE IF NOT EXISTS ProgramElective(
     course_id VARCHAR(50) NOT NULL,
     batch_id VARCHAR(50) NOT NULL,
-    semester INT NOT NULL,
-    year INT NOT NULL,
     type VARCHAR(50) NOT NULL,
     PRIMARY KEY (course_id, batch_id),
     FOREIGN KEY (course_id) REFERENCES Course(id),
